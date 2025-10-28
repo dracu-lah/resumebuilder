@@ -262,62 +262,61 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                       )}
                     </tr>
                     {data.skills.databases?.filter(Boolean).length > 0 && (
-                      <>
-                        <tr>
-                          <td colSpan={3} height="8"></td>
-                        </tr>
-                        <tr>
-                          <td width="33%" valign="top">
-                            <table cellPadding="0" cellSpacing="0">
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      fontSize: "10pt",
-                                      lineHeight: "1.4",
-                                    }}
-                                  >
-                                    <strong>Databases:</strong>
-                                    <br />
-                                    {data.skills.databases
-                                      .filter(Boolean)
-                                      .join(", ")}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </>
+                      <tr>
+                        <td colSpan={3} height="8"></td>
+                      </tr>
+                    )}
+                    {data.skills.databases?.filter(Boolean).length > 0 && (
+                      <tr>
+                        <td width="33%" valign="top">
+                          <table cellPadding="0" cellSpacing="0">
+                            <tbody>
+                              <tr>
+                                <td
+                                  style={{
+                                    fontSize: "10pt",
+                                    lineHeight: "1.4",
+                                  }}
+                                >
+                                  <strong>Databases:</strong>
+                                  <br />
+                                  {data.skills.databases
+                                    .filter(Boolean)
+                                    .join(", ")}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                        <td width="67%" colSpan={2}></td>
+                      </tr>
                     )}
                     {data.skills.other?.filter(Boolean).length > 0 && (
-                      <>
-                        <tr>
-                          <td colSpan={3} height="8"></td>
-                        </tr>
-                        <tr>
-                          <td colSpan={2} valign="top">
-                            <table cellPadding="0" cellSpacing="0">
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      fontSize: "10pt",
-                                      lineHeight: "1.4",
-                                    }}
-                                  >
-                                    <strong>Other Skills:</strong>
-                                    <br />
-                                    {data.skills.other
-                                      .filter(Boolean)
-                                      .join(", ")}
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </>
+                      <tr>
+                        <td colSpan={3} height="8"></td>
+                      </tr>
+                    )}
+                    {data.skills.other?.filter(Boolean).length > 0 && (
+                      <tr>
+                        <td colSpan={3} valign="top">
+                          <table cellPadding="0" cellSpacing="0">
+                            <tbody>
+                              <tr>
+                                <td
+                                  style={{
+                                    fontSize: "10pt",
+                                    lineHeight: "1.4",
+                                  }}
+                                >
+                                  <strong>Other Skills:</strong>
+                                  <br />
+                                  {data.skills.other.filter(Boolean).join(", ")}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
@@ -355,16 +354,16 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                 </h2>
 
                 {data.experience.map((exp, index) => (
-                  <table
-                    key={index}
-                    width="100%"
-                    cellPadding="0"
-                    cellSpacing="0"
-                    className="mb-4"
-                  >
-                    <tbody>
-                      {exp.positions?.map((position, posIndex: number) => (
-                        <tbody key={posIndex}>
+                  <div key={index} className="mb-4">
+                    {exp.positions?.map((position, posIndex: number) => (
+                      <table
+                        key={posIndex}
+                        width="100%"
+                        cellPadding="0"
+                        cellSpacing="0"
+                        className={posIndex > 0 ? "mt-3" : ""}
+                      >
+                        <tbody>
                           <tr>
                             <td width="70%" valign="top">
                               <table cellPadding="0" cellSpacing="0">
@@ -445,15 +444,10 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                               </table>
                             </td>
                           </tr>
-                          {posIndex < exp.positions.length - 1 && (
-                            <tr>
-                              <td colSpan={2} height="12"></td>
-                            </tr>
-                          )}
                         </tbody>
-                      ))}
-                    </tbody>
-                  </table>
+                      </table>
+                    ))}
+                  </div>
                 ))}
               </td>
             </tr>
