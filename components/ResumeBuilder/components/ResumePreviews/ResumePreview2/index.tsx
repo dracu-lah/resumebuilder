@@ -1,13 +1,17 @@
 import { toast } from "sonner";
 import { useReactToPrint } from "react-to-print";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [showEducation, setShowEducation] = useState(true);
   const [isDesignMode, setIsDesignMode] = useState(false);
@@ -29,11 +33,11 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     documentTitle: "Resume",
   });
 
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       ref={contentRef}
       contentEditable={isDesignMode}
-      className="bg-white p-4 max-w-4xl resume-container mx-auto text-black"
+      className="bg-white  p-[0.5in] max-w-4xl resume-container mx-auto text-black"
       style={{
         fontFamily: 'Times, "Times New Roman", serif',
         fontSize: "11pt",
@@ -41,7 +45,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
       }}
     >
       {/* Header table: left = location/links, center = name/title, right = contact */}
-      <table width="100%" cellPadding={6} cellSpacing={0} className="mb-4">
+      <table width="100%" cellPadding={6} cellSpacing={0} className="mb-4 ">
         <tbody>
           <tr>
             <td width="33%" valign="top" style={{ fontSize: "10pt" }}>
@@ -237,21 +241,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                         </td>
                       </tr>
 
-                      {position.client && (
-                        <tr>
-                          <td
-                            colSpan={2}
-                            style={{
-                              fontSize: "10pt",
-                              paddingTop: 6,
-                              fontStyle: "italic",
-                            }}
-                          >
-                            {position.client}
-                          </td>
-                        </tr>
-                      )}
-
                       <tr>
                         <td colSpan={2} style={{ paddingTop: 6 }}>
                           <ul
@@ -274,15 +263,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                               </li>
                             ))}
                           </ul>
-
-                          <div style={{ marginTop: 6, fontSize: "10pt" }}>
-                            <span className="italic">Tech Stack: </span>
-                            {Array.isArray(position.techStack)
-                              ? position.techStack.join(", ")
-                              : position.techStack ||
-                                exp.techStack ||
-                                "Not specified"}
-                          </div>
                         </td>
                       </tr>
                     </tbody>
@@ -324,11 +304,8 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                       <tbody>
                         <tr>
                           <td valign="top" style={{ fontSize: "10pt" }}>
-                            <span className="font-bold">● {project.name}</span>
-                            {project.yearRange && (
-                              <span> ({project.yearRange})</span>
-                            )}
-                            : {project.description}
+                            <span className="font-bold">● {project.name}</span>:{" "}
+                            {project.description}
                           </td>
                         </tr>
                         {project.technologies?.filter(Boolean).length > 0 && (

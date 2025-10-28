@@ -1,5 +1,5 @@
 import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
@@ -8,7 +8,13 @@ import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
+
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
   const contentRef = useRef(null);
@@ -19,7 +25,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     pageStyle: `
     @page {
       size: A4;
-      margin: 20mm;
+      margin: 0.5in;
     }
     
     @media print {
@@ -48,16 +54,14 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     }
   `,
     documentTitle: "Resume",
-    onBeforeGetContent: () => Promise.resolve(),
     onAfterPrint: () => console.log("Print completed"),
-    removeAfterPrint: true,
   });
 
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       contentEditable={isDesignMode}
       ref={contentRef}
-      className="bg-white p-8 max-w-4xl resume-container mx-auto text-black font-sans"
+      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black font-sans"
     >
       {/* Header Section */}
       <table width="100%" cellPadding="0" cellSpacing="0" className="mb-6">
@@ -260,7 +264,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                     {data.skills.databases?.filter(Boolean).length > 0 && (
                       <>
                         <tr>
-                          <td colSpan="3" height="8"></td>
+                          <td colSpan={3} height="8"></td>
                         </tr>
                         <tr>
                           <td width="33%" valign="top">
@@ -289,10 +293,10 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                     {data.skills.other?.filter(Boolean).length > 0 && (
                       <>
                         <tr>
-                          <td colSpan="3" height="8"></td>
+                          <td colSpan={3} height="8"></td>
                         </tr>
                         <tr>
-                          <td colSpan="2" valign="top">
+                          <td colSpan={2} valign="top">
                             <table cellPadding="0" cellSpacing="0">
                               <tbody>
                                 <tr>
@@ -398,28 +402,17 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                           </tr>
                           <tr>
                             <td
-                              colSpan="2"
+                              colSpan={2}
                               style={{ fontSize: "11pt", fontStyle: "italic" }}
                             >
                               {exp.company}
-                              {position.link && (
-                                <>
-                                  {" | "}
-                                  <a
-                                    href={position.link}
-                                    className="text-indigo-600"
-                                  >
-                                    {!showLinks ? "Link" : position.link}
-                                  </a>
-                                </>
-                              )}
                             </td>
                           </tr>
                           <tr>
-                            <td colSpan="2" height="8"></td>
+                            <td colSpan={2} height="8"></td>
                           </tr>
                           <tr>
-                            <td colSpan="2">
+                            <td colSpan={2}>
                               <table
                                 width="100%"
                                 cellPadding="0"
@@ -452,22 +445,9 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                               </table>
                             </td>
                           </tr>
-                          {position.techStack && (
-                            <>
-                              <tr>
-                                <td colSpan="2" height="8"></td>
-                              </tr>
-                              <tr>
-                                <td colSpan="2" style={{ fontSize: "10pt" }}>
-                                  <strong>Tech Stack:</strong>{" "}
-                                  {position.techStack}
-                                </td>
-                              </tr>
-                            </>
-                          )}
                           {posIndex < exp.positions.length - 1 && (
                             <tr>
-                              <td colSpan="2" height="12"></td>
+                              <td colSpan={2} height="12"></td>
                             </tr>
                           )}
                         </tbody>

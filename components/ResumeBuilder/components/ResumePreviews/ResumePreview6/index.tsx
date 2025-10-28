@@ -1,5 +1,5 @@
 import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
@@ -8,7 +8,13 @@ import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
+
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
   const contentRef = useRef(null);
@@ -19,7 +25,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     pageStyle: `
     @page {
       size: A4;
-      margin: 12.7mm;
+      margin: 0.5in;
     }
     
     @media print {
@@ -52,11 +58,11 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     onAfterPrint: () => console.log("Print completed"),
   });
 
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       contentEditable={isDesignMode}
       ref={contentRef}
-      className="bg-white p-8 max-w-4xl resume-container mx-auto text-black font-sans"
+      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black font-sans"
       style={{ fontFamily: "Arial, sans-serif" }}
     >
       <table width="100%" cellPadding="0" cellSpacing="0" className="mb-2">
@@ -95,8 +101,8 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
               </table>
             </td>
 
-            {/* Center: name */}
-            <td width="64%" align="center" valign="middle">
+            {/* Center: name - FIXED */}
+            <td width="34%" align="center" valign="middle">
               <h1
                 style={{
                   fontSize: "20pt",
@@ -209,7 +215,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
       >
         <tbody>
           <tr>
-            <td colSpan="2">
+            <td colSpan={2}>
               <table width="100%" cellPadding="0" cellSpacing="0">
                 <tbody>
                   <tr>
@@ -303,7 +309,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                 >
                   <tbody>
                     <tr>
-                      <td colSpan="2" height="4"></td>
+                      <td colSpan={2} height="4"></td>
                     </tr>
                     <tr>
                       <td
@@ -324,7 +330,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                     </tr>
                     <tr>
                       <td
-                        colSpan="2"
+                        colSpan={2}
                         style={{
                           fontSize: "9pt",
                           fontStyle: "italic",
@@ -335,7 +341,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                       </td>
                     </tr>
                     <tr>
-                      <td colSpan="2">
+                      <td colSpan={2}>
                         <table width="100%" cellPadding="0" cellSpacing="0">
                           <tbody>
                             {exp.positions?.[0]?.achievements?.map(
@@ -365,17 +371,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                         </table>
                       </td>
                     </tr>
-                    {exp.positions?.[0]?.techStack && (
-                      <tr>
-                        <td
-                          colSpan="2"
-                          style={{ fontSize: "9pt", paddingTop: "2px" }}
-                        >
-                          <strong>Tech Stack:</strong>{" "}
-                          {exp.positions[0].techStack}
-                        </td>
-                      </tr>
-                    )}
                   </tbody>
                 </table>
               ))}
@@ -426,7 +421,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                 >
                   <tbody>
                     <tr>
-                      <td colSpan="2" height="4"></td>
+                      <td colSpan={2} height="4"></td>
                     </tr>
                     <tr>
                       <td style={{ fontSize: "9pt", lineHeight: "1.5" }}>
@@ -447,7 +442,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                         ) : (
                           <strong>{project.name}</strong>
                         )}
-                        {project.year && <span> ({project.year})</span>}
                         {project.description && <>: {project.description}</>}
                         {project.technologies.filter(Boolean).length > 0 && (
                           <>

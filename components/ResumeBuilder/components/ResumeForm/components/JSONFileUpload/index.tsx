@@ -76,10 +76,10 @@ export default function JSONFileUploadModal({
             Upload Resume JSON
           </DialogTitle>
           <DialogDescription className="space-y-2">
-            <p>
+            <span>
               Upload a JSON file or fetch from a remote URL. Data will be
               validated.
-            </p>
+            </span>
             <DownloadJSONButton
               data={defaultValues as Resume}
               label="Download This JSON , Update & Reupload"

@@ -1,5 +1,5 @@
 import { useReactToPrint } from "react-to-print";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
@@ -7,11 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
+
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
-  const [imageSrc, setImageSrc] = useState(null);
-  const fileInputRef = useRef(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const contentRef = useRef(null);
 
   // Print handler
@@ -19,7 +25,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     contentRef,
     preserveAfterPrint: true,
     pageStyle: `
-      @page { size: A4; margin: 12.7mm; }
+      @page { size: A4; margin: 0.5in; }
       @media print {
         body { -webkit-print-color-adjust: exact; color-adjust: exact; }
         .resume-container { width:100%; max-width:none; margin:0; padding:0; font-size:12px; line-height:1.4; }
@@ -31,9 +37,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
       }
     `,
     documentTitle: "Resume",
-    onBeforeGetContent: () => Promise.resolve(),
     onAfterPrint: () => console.log("Print completed"),
-    removeAfterPrint: true,
   });
 
   // Load stored image from localStorage on mount
@@ -48,7 +52,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
   }, []);
 
   // Handle file read + persist to localStorage
-  const handleImagePick = (file) => {
+  const handleImagePick = (file: File) => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -63,7 +67,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     reader.readAsDataURL(file);
   };
 
-  const onFileChange = (e) => {
+  const onFileChange = (e: any) => {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
     handleImagePick(f);
@@ -83,11 +87,11 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       ref={contentRef}
       contentEditable={isDesignMode}
-      className="bg-white p-8 max-w-4xl resume-container mx-auto text-black"
+      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black"
       style={{
         fontFamily: 'Times, "Times New Roman", serif',
         fontSize: "11pt",
@@ -194,11 +198,9 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                 <div
                   style={{
                     position: "relative",
-                    width: 120,
+                    width: 150,
                     minWidth: 120,
-                    height: 150,
-                    border: "1px solid #ddd",
-                    borderRadius: 4,
+                    height: 180,
                     background: "#f6f6f6",
                     overflow: "hidden",
                     boxSizing: "border-box",
@@ -259,7 +261,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                     <button
                       type="button"
                       onClick={triggerFile}
-                      className="inline-block text-xs px-2 py-1 border rounded"
+                      className="inline-block text-xs px-1 py-1 "
                       style={{
                         background: "rgba(255,255,255,0.9)",
                         backdropFilter: "blur(2px)",
@@ -272,7 +274,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                       <button
                         type="button"
                         onClick={clearImage}
-                        className="inline-block text-xs px-2 py-1 border rounded"
+                        className="inline-block text-xs px-1 py-1 "
                         style={{
                           background: "rgba(255,255,255,0.9)",
                           backdropFilter: "blur(2px)",
@@ -383,18 +385,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                                 </div>
                               </div>
 
-                              {position.client && (
-                                <div
-                                  style={{
-                                    fontStyle: "italic",
-                                    marginTop: 6,
-                                    fontSize: "10pt",
-                                  }}
-                                >
-                                  {position.client}
-                                </div>
-                              )}
-
                               <ul
                                 style={{
                                   marginTop: 8,
@@ -417,21 +407,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                                     </li>
                                   ))}
                               </ul>
-
-                              {Array.isArray(position.techStack) && (
-                                <div
-                                  style={{
-                                    marginTop: 6,
-                                    fontSize: "10pt",
-                                    fontStyle: "italic",
-                                  }}
-                                >
-                                  <strong>Tech Stack:</strong>{" "}
-                                  {Array.isArray(position.techStack)
-                                    ? position.techStack.join(", ")
-                                    : position.techStack || exp.techStack}
-                                </div>
-                              )}
                             </td>
                           </tr>
                         ))}

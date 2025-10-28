@@ -1,13 +1,17 @@
 import { useReactToPrint } from "react-to-print";
-import { useRef, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
   const contentRef = useRef(null);
@@ -16,7 +20,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     contentRef,
     preserveAfterPrint: true,
     pageStyle: `
-      @page { size: A4; margin: 20mm; }
+      @page { size: A4; margin: 0.5in; }
       @media print {
         body { -webkit-print-color-adjust: exact; color-adjust: exact; -webkit-font-smoothing: antialiased; }
         .resume-container { width:100%; max-width:none; margin:0; padding:0; font-size:12px; line-height:1.35; }
@@ -29,20 +33,13 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
       }
     `,
     documentTitle: "Resume",
-    onBeforeGetContent: () => Promise.resolve(),
-    onAfterPrint: () => console.log("Print completed"),
-    removeAfterPrint: true,
   });
 
-  useEffect(() => {
-    // reserved for future side effects
-  }, []);
-
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       ref={contentRef}
       contentEditable={isDesignMode}
-      className="bg-white p-8 max-w-4xl resume-container mx-auto text-black"
+      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black"
       style={{
         fontFamily: 'Georgia, "Times New Roman", Times, serif',
         fontSize: "11pt",
@@ -216,9 +213,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                 <div style={{ fontSize: "12pt", fontWeight: 700 }}>
                   {exp.company}
                 </div>
-                <div style={{ fontSize: "10pt", color: "#444" }}>
-                  {exp.range || ""}
-                </div>
               </div>
 
               {Array.isArray(exp.positions) &&
@@ -246,19 +240,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                       </div>
                     </div>
 
-                    {position.client && (
-                      <div
-                        style={{
-                          fontStyle: "italic",
-                          marginTop: 6,
-                          fontSize: "10pt",
-                          color: "#444",
-                        }}
-                      >
-                        {position.client}
-                      </div>
-                    )}
-
                     {Array.isArray(position.achievements) &&
                       position.achievements.filter(Boolean).length > 0 && (
                         <ul
@@ -284,38 +265,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                             ))}
                         </ul>
                       )}
-
-                    {/* Tech Stack: show only if present */}
-                    {((Array.isArray(position.techStack) &&
-                      position.techStack.filter(Boolean).length > 0) ||
-                      (Array.isArray(exp.techStack) &&
-                        exp.techStack.filter(Boolean).length > 0) ||
-                      (typeof position.techStack === "string" &&
-                        position.techStack.trim()) ||
-                      (typeof exp.techStack === "string" &&
-                        exp.techStack.trim())) && (
-                      <div
-                        style={{
-                          marginTop: 8,
-                          fontSize: "10pt",
-                          fontStyle: "italic",
-                          color: "#333",
-                        }}
-                      >
-                        <strong>Tech Stack:</strong>{" "}
-                        {Array.isArray(position.techStack) &&
-                        position.techStack.filter(Boolean).length > 0
-                          ? position.techStack.filter(Boolean).join(", ")
-                          : Array.isArray(exp.techStack) &&
-                              exp.techStack.filter(Boolean).length > 0
-                            ? exp.techStack.filter(Boolean).join(", ")
-                            : (typeof position.techStack === "string" &&
-                                position.techStack) ||
-                              (typeof exp.techStack === "string" &&
-                                exp.techStack) ||
-                              ""}
-                      </div>
-                    )}
                   </div>
                 ))}
             </div>

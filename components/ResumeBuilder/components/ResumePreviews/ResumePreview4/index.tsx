@@ -1,13 +1,19 @@
 import { toast } from "sonner";
 import { useReactToPrint } from "react-to-print";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
+
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
   const [showEducation, setShowEducation] = useState(true);
@@ -17,7 +23,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     contentRef,
     preserveAfterPrint: true,
     pageStyle: `
-      @page { size: A4; margin: 12.7mm; }
+      @page { size: A4; margin: 0.5in; }
       @media print {
         body { -webkit-print-color-adjust: exact; color-adjust: exact; }
         .resume-container { width: 100%; font-size: 9.5pt; line-height: 1.35; }
@@ -28,11 +34,11 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     documentTitle: "Resume",
   });
 
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       ref={contentRef}
       contentEditable={isDesignMode}
-      className="bg-white p-4 max-w-4xl resume-container mx-auto text-black"
+      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black"
       style={{
         fontFamily: "Arial, sans-serif",
         fontSize: "9.5pt",
@@ -194,12 +200,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                           </>
                         )}
                       </span>
-                      <span
-                        className="font-semibold"
-                        style={{ fontSize: "9.5pt" }}
-                      >
-                        {p.duration || ""}
-                      </span>
                     </div>
                     <ul className="ml-4 mt-1 space-y-0.5">
                       <li style={{ fontSize: "9pt", textAlign: "justify" }}>
@@ -246,22 +246,13 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                   <td width="65%" valign="top" style={{ paddingRight: "10px" }}>
                     <div className="font-bold">{edu.institution}</div>
                     <div>{edu.degree}</div>
-                    {edu.gpa && (
-                      <div>
-                        {edu.specialization}; GPA: {edu.gpa}
-                      </div>
-                    )}
                   </td>
                   <td
                     width="35%"
                     align="right"
                     valign="top"
                     style={{ lineHeight: "1.4" }}
-                  >
-                    <div>{edu.location}</div>
-                    <div className="font-semibold">{edu.graduationDate}</div>
-                    {edu.additionalInfo && <div>{edu.additionalInfo}</div>}
-                  </td>
+                  ></td>
                 </tr>
               ))}
             </tbody>

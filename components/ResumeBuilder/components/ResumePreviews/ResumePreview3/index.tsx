@@ -1,13 +1,18 @@
 import { toast } from "sonner";
 import { useReactToPrint } from "react-to-print";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
 
-const ResumePreviewPage = ({ resumeData, setViewMode }) => {
+type ResumeFormType = {
+  resumeData: Resume;
+  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
+};
+const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [showEducation, setShowEducation] = useState(true);
   const [isDesignMode, setIsDesignMode] = useState(false);
@@ -53,11 +58,11 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
     documentTitle: "Resume",
   });
 
-  const ResumePreview = ({ data }) => (
+  const ResumePreview = ({ data }: { data: Resume }) => (
     <div
       ref={contentRef}
       contentEditable={isDesignMode}
-      className="bg-white p-4 max-w-4xl resume-container mx-auto text-black"
+      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black"
       style={{
         fontFamily: 'Times, "Times New Roman", serif',
         fontSize: "11pt",
@@ -293,13 +298,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                               ),
                             )}
                           </ul>
-
-                          {position.techStack?.length > 0 && (
-                            <div style={{ marginTop: 6, fontSize: "10pt" }}>
-                              <span className="italic">Tech Stack: </span>
-                              {position.techStack.join(", ")}
-                            </div>
-                          )}
                         </td>
                       </tr>
                     </tbody>

@@ -8,6 +8,7 @@ import ResumePreviewPage6 from "@/components/ResumeBuilder/components/ResumePrev
 import ResumePreviewPage7 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview7";
 import ResumeFormPage from "@/components/ResumeBuilder/components/ResumeForm";
 import { Button } from "../ui/button";
+import { type Resume } from "./components/ResumeForm/components/JSONFileUpload/components/utils";
 
 const templates = [
   {
@@ -46,8 +47,8 @@ const templates = [
   },
 ];
 export default function ResumeBuilder() {
-  const [viewMode, setViewMode] = useState("edit");
-  const [resumeData, setResumeData] = useState(null);
+  const [viewMode, setViewMode] = useState<"preview" | "edit">("edit");
+  const [resumeData, setResumeData] = useState<Resume | null>(null);
   const [template, setTemplate] = useState(templates[0]);
 
   if (viewMode === "preview" && resumeData) {

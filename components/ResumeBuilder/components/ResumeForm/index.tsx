@@ -24,7 +24,16 @@ import { ChevronDown } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import { ChevronsDown } from "lucide-react";
 import OldResumeUpload from "./components/OldResumeUpload";
-const ResumeFormPage = ({ setResumeData, setViewMode }) => {
+import z from "zod";
+type Resume = z.infer<typeof resumeSchema>;
+type ResumeFormPageProps = {
+  setResumeData: (data: Resume) => void;
+  setViewMode: (mode: "preview" | "edit") => void;
+};
+const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
+  setResumeData,
+  setViewMode,
+}) => {
   const form = useForm({
     resolver: zodResolver(resumeSchema),
     defaultValues,
@@ -34,7 +43,6 @@ const ResumeFormPage = ({ setResumeData, setViewMode }) => {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
     watch,
     reset,
   } = form;
@@ -75,7 +83,7 @@ const ResumeFormPage = ({ setResumeData, setViewMode }) => {
     }
   }, [reset]);
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: Resume) => {
     setResumeData(data);
     localStorage.setItem("resumeData", JSON.stringify(data));
     setViewMode("preview");
