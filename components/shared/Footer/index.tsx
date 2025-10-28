@@ -18,7 +18,7 @@ const Footer = () => {
             </a>
 
             <a
-              href="https://dracufolio.vercel.app/"
+              href="https://nevi.dev"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200 group"

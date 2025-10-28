@@ -3,7 +3,7 @@ import { Github } from "lucide-react";
 
 const GithubButton = () => {
   const handleClick = () => {
-    window.open("https://github.com/dracu-lah/resume-builder-react#", "_blank");
+    window.open("https://github.com/dracu-lah/resumebuilder", "_blank");
   };
 
   return (
