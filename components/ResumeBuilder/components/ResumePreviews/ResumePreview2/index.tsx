@@ -81,7 +81,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
               <div style={{ textAlign: "center" }}>
                 <h1
                   className="font-bold"
-                  style={{ fontSize: "14pt", letterSpacing: "1pt", margin: 0 }}
+                  style={{ fontSize: "16pt", letterSpacing: "1pt", margin: 0 }}
                 >
                   {data.personalInfo.name
                     ? data.personalInfo.name.toUpperCase()
