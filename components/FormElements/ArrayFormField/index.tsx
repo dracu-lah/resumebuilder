@@ -2,20 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Plus, Minus } from "lucide-react";
 import BasicFormField from "@/components/FormElements/BasicFormField";
 import TextAreaFormField from "@/components/FormElements/TextAreaFormField";
-import {
-  useFormContext,
-  FieldArrayWithId,
-  UseFieldArrayAppend,
-  UseFieldArrayRemove,
-  FieldErrors,
-} from "react-hook-form";
+import { useFormContext, FieldErrors, useFieldArray } from "react-hook-form";
 
 interface ArrayFieldComponentProps {
-  fields: {
-    fields: FieldArrayWithId<any, string, "id">[];
-  };
-  append: UseFieldArrayAppend<any, string>;
-  remove: UseFieldArrayRemove;
   name: string;
   placeholder?: string;
   label: string;
@@ -24,26 +13,26 @@ interface ArrayFieldComponentProps {
 }
 
 const ArrayFieldComponent: React.FC<ArrayFieldComponentProps> = ({
-  fields,
-  append,
-  remove,
   name,
   placeholder = "",
   label,
   type = "input",
   rows = 3,
 }) => {
-  const {
-    formState: { errors },
-  } = useFormContext<Record<string, any>>();
+  const form = useFormContext();
+
+  const arrayFields = useFieldArray({
+    control: form.control,
+    name,
+  });
 
   return (
     <div key={name} className="space-y-2">
       <span className="text-sm font-medium">{label}</span>
-      {fields.fields.map((field, index) => {
-        const fieldError = (errors?.[name] as FieldErrors)?.[index]?.message as
-          | string
-          | undefined;
+      {arrayFields.fields.map((field, index) => {
+        const fieldError = (form.formState.errors?.[name] as FieldErrors)?.[
+          index
+        ]?.message as string | undefined;
         return (
           <div key={field.id} className="flex flex-col gap-1">
             <div className="flex gap-2 items-start">
@@ -60,12 +49,12 @@ const ArrayFieldComponent: React.FC<ArrayFieldComponentProps> = ({
                   rows={rows}
                 />
               )}
-              {fields.fields.length > 1 && (
+              {arrayFields.fields.length > 1 && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => remove(index)}
+                  onClick={() => arrayFields.remove(index)}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -81,7 +70,7 @@ const ArrayFieldComponent: React.FC<ArrayFieldComponentProps> = ({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => append("")}
+        onClick={() => arrayFields.append("")}
       >
         <Plus className="h-4 w-4 mr-2" />
         Add {label.slice(0, -1)}

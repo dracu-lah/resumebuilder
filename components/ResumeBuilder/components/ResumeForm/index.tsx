@@ -32,9 +32,9 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
   setResumeData,
   setViewMode,
 }) => {
-  const form = useForm({
-    resolver: zodResolver(resumeSchema),
+  const form = useForm<Resume>({
     defaultValues,
+    resolver: zodResolver(resumeSchema),
     mode: "onChange",
   });
   const experienceFields = useFieldArray({
@@ -48,44 +48,6 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
   const projectFields = useFieldArray({
     control: form.control,
     name: "projects",
-  });
-  const achievementFields = useFieldArray({
-    control: form.control,
-    name: "achievements",
-  });
-  const interestFields = useFieldArray({
-    control: form.control,
-    name: "interests",
-  });
-
-  // Skill field arrays
-  const languageFields = useFieldArray({
-    control: form.control,
-    name: "skills.languages",
-  });
-  const frameworkFields = useFieldArray({
-    control: form.control,
-    name: "skills.frameworks",
-  });
-  const databaseFields = useFieldArray({
-    control: form.control,
-    name: "skills.databases",
-  });
-  const architectureFields = useFieldArray({
-    control: form.control,
-    name: "skills.architectures",
-  });
-  const toolFields = useFieldArray({
-    control: form.control,
-    name: "skills.tools",
-  });
-  const methodologyFields = useFieldArray({
-    control: form.control,
-    name: "skills.methodologies",
-  });
-  const otherFields = useFieldArray({
-    control: form.control,
-    name: "skills.other",
   });
 
   useEffect(() => {
@@ -255,7 +217,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                               name={`experience.${expIndex}.positions`}
                               render={({ field: { value, onChange } }) => (
                                 <div className="space-y-4">
-                                  {value.map((position, posIndex) => (
+                                  {value.map((_position, posIndex) => (
                                     <div
                                       key={posIndex}
                                       className="border rounded-lg p-4"
@@ -456,63 +418,42 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                     </CardHeader>
                     <CardContent className="space-y-6">
                       <ArrayFormField
-                        fields={languageFields}
-                        append={languageFields.append}
-                        remove={languageFields.remove}
                         name="skills.languages"
                         placeholder="e.g. JavaScript"
                         label="Languages"
                       />
 
                       <ArrayFormField
-                        fields={frameworkFields}
-                        append={frameworkFields.append}
-                        remove={frameworkFields.remove}
                         name="skills.frameworks"
                         placeholder="e.g. React.js"
                         label="Frameworks & Libraries"
                       />
 
                       <ArrayFormField
-                        fields={databaseFields}
-                        append={databaseFields.append}
-                        remove={databaseFields.remove}
                         name="skills.databases"
                         placeholder="e.g. PostgreSQL"
                         label="Databases"
                       />
 
                       <ArrayFormField
-                        fields={architectureFields}
-                        append={architectureFields.append}
-                        remove={architectureFields.remove}
                         name="skills.architectures"
                         placeholder="e.g. RESTful API Design"
                         label="Architectures"
                       />
 
                       <ArrayFormField
-                        fields={toolFields}
-                        append={toolFields.append}
-                        remove={toolFields.remove}
                         name="skills.tools"
                         placeholder="e.g. Git"
                         label="Tools & Platforms"
                       />
 
                       <ArrayFormField
-                        fields={methodologyFields}
-                        append={methodologyFields.append}
-                        remove={methodologyFields.remove}
                         name="skills.methodologies"
                         placeholder="e.g. Agile"
                         label="Methodologies"
                       />
 
                       <ArrayFormField
-                        fields={otherFields}
-                        append={otherFields.append}
-                        remove={otherFields.remove}
                         name="skills.other"
                         placeholder="e.g. API Integration"
                         label="Other Skills"
@@ -843,9 +784,6 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                       </CardHeader>
                       <CardContent>
                         <ArrayFormField
-                          fields={achievementFields}
-                          append={achievementFields.append}
-                          remove={achievementFields.remove}
                           name="achievements"
                           placeholder="e.g. AWS Certified Developer | 2023"
                           label="Achievements"
@@ -859,9 +797,6 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                       </CardHeader>
                       <CardContent>
                         <ArrayFormField
-                          fields={interestFields}
-                          append={interestFields.append}
-                          remove={interestFields.remove}
                           name="interests"
                           placeholder="e.g. Machine Learning"
                           label="Interests"
