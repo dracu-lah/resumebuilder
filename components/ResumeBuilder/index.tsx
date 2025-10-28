@@ -17,12 +17,12 @@ const templates = [
   },
 
   {
-    label: "Template 2 [FAANG inspired]",
-    template: ResumePreviewPage2,
+    label: "Template 2",
+    template: ResumePreviewPage6,
   },
   {
-    label: "Template 3",
-    template: ResumePreviewPage6,
+    label: "Template 3 [FAANG inspired]",
+    template: ResumePreviewPage2,
   },
 
   // {
