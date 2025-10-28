@@ -1,3 +1,9 @@
+# *
 User-agent: *
 Allow: /
+
+# Host
+Host: https://resumebuilder.js.org
+
+# Sitemaps
 Sitemap: https://resumebuilder.js.org/sitemap.xml
