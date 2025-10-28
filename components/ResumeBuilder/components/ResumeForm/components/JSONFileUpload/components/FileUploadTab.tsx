@@ -1,6 +1,16 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { validateAndProcessFile } from "./utils";
+import { validateAndProcessFile, Resume } from "./utils";
+
+export type FileUploadTabProps = {
+  isDragOver: boolean;
+  setIsDragOver: (v: boolean) => void;
+  setError: (msg: string | null) => void;
+  setSuccess: (ok: boolean) => void;
+  setUploadedData: (data: Resume | null) => void;
+  onUpload?: (data: Resume) => void;
+};
 
 export default function FileUploadTab({
   isDragOver,
@@ -9,10 +19,12 @@ export default function FileUploadTab({
   setSuccess,
   setUploadedData,
   onUpload,
-}) {
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file)
+}: FileUploadTabProps) {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    // clear input so same file can be re-selected later
+    event.currentTarget.value = "";
+    if (file) {
       validateAndProcessFile(
         file,
         setError,
@@ -20,13 +32,14 @@ export default function FileUploadTab({
         setUploadedData,
         onUpload,
       );
+    }
   };
 
-  const handleDrop = (event) => {
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragOver(false);
-    const file = event.dataTransfer.files[0];
-    if (file)
+    const file = event.dataTransfer.files?.[0];
+    if (file) {
       validateAndProcessFile(
         file,
         setError,
@@ -34,6 +47,7 @@ export default function FileUploadTab({
         setUploadedData,
         onUpload,
       );
+    }
   };
 
   return (
@@ -58,6 +72,7 @@ export default function FileUploadTab({
         Drop your resume JSON file here
       </p>
       <p className="text-sm text-gray-500 mb-4">or click to browse files</p>
+
       <input
         type="file"
         accept=".json,application/json"
@@ -65,6 +80,7 @@ export default function FileUploadTab({
         className="hidden"
         id="file-upload"
       />
+
       <Button asChild>
         <label htmlFor="file-upload" className="cursor-pointer">
           Choose File

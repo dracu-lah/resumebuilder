@@ -1,11 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 
+export type DownloadJSONButtonProps = {
+  data: Record<string, unknown>;
+  filename?: string;
+  label?: string;
+};
+
 export function DownloadJSONButton({
   data,
   filename = "resume.json",
   label = "Download JSON",
-}) {
+}: DownloadJSONButtonProps) {
   const handleDownload = () => {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -20,9 +26,8 @@ export function DownloadJSONButton({
   };
 
   return (
-    <Button onClick={handleDownload}>
+    <Button type="button" onClick={handleDownload}>
       <Download className="h-4 w-4 mr-2" />
-
       {label}
     </Button>
   );

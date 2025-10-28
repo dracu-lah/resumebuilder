@@ -22,7 +22,8 @@ const pdfSchema = z.object({
   pdfFile: z
     .any()
     .refine(
-      (file) => file && file.length === 1 && file[0].type === "application/pdf",
+      (file) =>
+        file && file.length === 1 && file[0]?.type === "application/pdf",
       {
         message: "Please upload a valid PDF file",
       },
@@ -33,16 +34,25 @@ const tokenSchema = z.object({
   apiKey: z.string().min(10, "API key must be at least 10 characters"),
 });
 
-const OldResumeUpload = ({ onUpload }) => {
+type PdfForm = { pdfFile: FileList };
+type TokenForm = { apiKey: string };
+
+type OldResumeUploadProps = {
+  onUpload?: (data: Record<string, any>) => void;
+};
+
+const OldResumeUpload: React.FC<OldResumeUploadProps> = ({ onUpload }) => {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState("upload");
+  const [step, setStep] = useState<
+    "upload" | "token" | "processing" | "success"
+  >("upload");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [needsToken, setNeedsToken] = useState(false);
   const [extractedText, setExtractedText] = useState("");
 
-  const pdfForm = useForm({ resolver: zodResolver(pdfSchema) });
-  const tokenForm = useForm({ resolver: zodResolver(tokenSchema) });
+  const pdfForm = useForm<PdfForm>({ resolver: zodResolver(pdfSchema) });
+  const tokenForm = useForm<TokenForm>({ resolver: zodResolver(tokenSchema) });
 
   const resetModal = () => {
     setStep("upload");
@@ -59,7 +69,14 @@ const OldResumeUpload = ({ onUpload }) => {
     resetModal();
   };
 
-  const parseResumeWithGemini = async (text, apiKey) => {
+  /**
+   * Call Gemini (GoogleGenAI) to convert extracted text -> JSON following defaultValues schema.
+   * Returns parsed JSON object or throws an Error.
+   */
+  const parseResumeWithGemini = async (
+    text: string,
+    apiKey: string,
+  ): Promise<Record<string, any>> => {
     const genAI = new GoogleGenAI({ apiKey });
 
     const prompt = `
@@ -78,66 +95,99 @@ ${text}
       model: "gemini-2.0-flash-lite",
       contents: prompt,
     });
-    let content = await result.candidates[0].content.parts[0].text;
-    const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/);
-    if (jsonMatch && jsonMatch[1]) {
-      content = jsonMatch[1];
-    } else {
-      console.warn(
-        "Gemini response did not contain JSON within a code block. Attempting direct parse.",
-      );
+
+    const candidate =
+      (result?.candidates?.[0]?.content?.parts?.[0]?.text ??
+      typeof result === "string")
+        ? (result as unknown as string)
+        : undefined;
+
+    if (!candidate || typeof candidate !== "string") {
+      throw new Error("Empty response from Gemini");
     }
 
-    return JSON.parse(content);
+    // try to extract JSON inside ```json ... ``` block
+    const jsonMatch = candidate.match(/```json\s*([\s\S]*?)\s*```/i);
+    const raw = jsonMatch ? jsonMatch[1] : candidate;
+
+    // attempt to find first { ... } block if candidate contains extra text
+    const firstBraceIndex = raw.indexOf("{");
+    const lastBraceIndex = raw.lastIndexOf("}");
+    if (firstBraceIndex === -1 || lastBraceIndex === -1) {
+      throw new Error("No JSON object found in Gemini response");
+    }
+
+    const jsonText = raw.slice(firstBraceIndex, lastBraceIndex + 1);
+
+    try {
+      return JSON.parse(jsonText);
+    } catch (err) {
+      // include the original snippet to help debugging
+      const snippet = jsonText.slice(0, 1000);
+      throw new Error(
+        `Failed to parse JSON from model response. Snippet: ${snippet}`,
+      );
+    }
   };
 
-  const handlePdfSubmit = async (e) => {
-    e.preventDefault();
-    const result = await pdfForm.trigger();
-    if (!result) return;
+  const handlePdfSubmit = async (
+    e?: React.FormEvent | React.MouseEvent,
+  ): Promise<void> => {
+    e?.preventDefault?.();
 
-    const formData = pdfForm.getValues();
-    const file = formData.pdfFile[0];
+    const valid = await pdfForm.trigger();
+    if (!valid) return;
+
+    const fileList = pdfForm.getValues().pdfFile;
+    const file = fileList?.[0];
+    if (!file) return;
+
     setLoading(true);
     setError(null);
     setStep("processing");
 
     try {
-      const text = await pdfToText(file);
+      // extract text from PDF (may throw)
+      // react-pdftotext may have an any-typed default; cast result to string
+      const text = (await pdfToText(file)) as string;
       setExtractedText(text);
 
-      const envApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const envApiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY as
+        | string
+        | undefined;
 
       if (envApiKey) {
         try {
           const parsedData = await parseResumeWithGemini(text, envApiKey);
-          onUpload(parsedData);
+          onUpload?.(parsedData);
           setStep("success");
-          setTimeout(() => handleClose(), 2000);
-        } catch (apiError) {
+          setTimeout(() => handleClose(), 1500);
+          return;
+        } catch (apiError: any) {
+          // if API key related, fall through to request token
+          const msg = apiError?.message ?? String(apiError);
           console.error("API Error:", apiError);
-          if (
-            apiError.message.includes("400") ||
-            apiError.message.includes("401") ||
-            apiError.message.includes("403") ||
-            apiError.message.includes("API_KEY")
-          ) {
+          if (/400|401|403|API_KEY/i.test(msg)) {
             setNeedsToken(true);
             setStep("token");
-          } else {
-            throw apiError;
+            setError(null);
+            return;
           }
+          throw apiError;
         }
       } else {
         setNeedsToken(true);
         setStep("token");
       }
-    } catch (err) {
-      console.error("Error:", err);
+    } catch (err: any) {
+      console.error("Error processing PDF:", err);
+      const message =
+        (err?.message && String(err.message)) ||
+        "Failed to process the PDF file. Please try again.";
       setError(
-        err.message.includes("429")
+        message.includes("429")
           ? "Rate limit reached. Please try again later."
-          : "Failed to process the PDF file. Please try again.",
+          : message,
       );
       setStep("upload");
     } finally {
@@ -145,10 +195,13 @@ ${text}
     }
   };
 
-  const handleTokenSubmit = async (e) => {
-    e.preventDefault();
-    const result = await tokenForm.trigger();
-    if (!result) return;
+  const handleTokenSubmit = async (
+    e?: React.FormEvent | React.MouseEvent,
+  ): Promise<void> => {
+    e?.preventDefault?.();
+
+    const valid = await tokenForm.trigger();
+    if (!valid) return;
 
     const formData = tokenForm.getValues();
     setLoading(true);
@@ -160,18 +213,15 @@ ${text}
         extractedText,
         formData.apiKey,
       );
-      onUpload(parsedData);
+      onUpload?.(parsedData);
       setStep("success");
-      setTimeout(() => handleClose(), 2000);
-    } catch (err) {
+      setTimeout(() => handleClose(), 1500);
+    } catch (err: any) {
       console.error("Token Error:", err);
-      if (
-        err.message.includes("400") ||
-        err.message.includes("401") ||
-        err.message.includes("403")
-      ) {
+      const msg = err?.message ? String(err.message) : "Unknown error";
+      if (/400|401|403/.test(msg)) {
         setError("Invalid API key. Please check your Google Gemini API key.");
-      } else if (err.message.includes("429")) {
+      } else if (/429/.test(msg)) {
         setError("Rate limit reached. Please try again later.");
       } else {
         setError(
@@ -179,6 +229,7 @@ ${text}
         );
       }
       setStep("token");
+    } finally {
       setLoading(false);
     }
   };
@@ -208,7 +259,7 @@ ${text}
                 />
                 {pdfForm.formState.errors.pdfFile && (
                   <p className="text-sm text-destructive mt-1">
-                    {pdfForm.formState.errors.pdfFile.message}
+                    {String(pdfForm.formState.errors.pdfFile.message)}
                   </p>
                 )}
               </div>
@@ -234,7 +285,7 @@ ${text}
                   disabled={loading}
                   className="flex-1"
                 >
-                  {loading ? "Processing..." : "Parse  Resume"}
+                  {loading ? "Processing..." : "Parse Resume"}
                 </Button>
               </div>
             </div>
@@ -280,7 +331,7 @@ ${text}
                 />
                 {tokenForm.formState.errors.apiKey && (
                   <p className="text-sm text-destructive mt-1">
-                    {tokenForm.formState.errors.apiKey.message}
+                    {String(tokenForm.formState.errors.apiKey.message)}
                   </p>
                 )}
               </div>
@@ -316,7 +367,7 @@ ${text}
       case "processing":
         return (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
             <p className="text-lg font-medium">Processing Resume...</p>
             <p className="text-sm text-muted-foreground">
               Extracting and parsing content with Google Gemini AI

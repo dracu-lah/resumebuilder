@@ -2,52 +2,73 @@ import { Button } from "@/components/ui/button";
 import { Plus, Minus } from "lucide-react";
 import BasicFormField from "@/components/FormElements/BasicFormField";
 import TextAreaFormField from "@/components/FormElements/TextAreaFormField";
-import { useFormContext } from "react-hook-form";
+import {
+  useFormContext,
+  FieldValues,
+  Path,
+  UseFieldArrayReturn,
+  ArrayPath,
+} from "react-hook-form";
 
-const ArrayFieldComponent = ({
-  fields,
-  append,
-  remove,
+type ArrayFieldComponentProps<T extends FieldValues = FieldValues> = {
+  fieldArray: UseFieldArrayReturn<T, ArrayPath<T>>;
+  name: Path<T>;
+  placeholder?: string;
+  label?: string;
+  type?: "input" | "textarea";
+  rows?: number;
+};
+
+export default function ArrayFieldComponent<
+  T extends FieldValues = FieldValues,
+>({
+  fieldArray,
   name,
   placeholder,
-  label,
+  label = "",
   type = "input",
   rows = 3,
-}) => {
+}: ArrayFieldComponentProps<T>) {
   const {
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<T>();
+
+  const getFieldError = (index: number) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ((errors as any)?.[String(name)]?.[index]?.message as string | undefined) ??
+    undefined;
 
   return (
-    <div key={name} className="space-y-2">
-      <span className="text-sm font-medium">{label}</span>
+    <div key={String(name)} className="space-y-2">
+      {label && <span className="text-sm font-medium">{label}</span>}
 
-      {fields.fields.map((field, index) => {
-        const fieldError = errors?.[name]?.[index]?.message;
+      {fieldArray.fields.map((field, index) => {
+        const fieldError = getFieldError(index);
+        const fieldPath = `${String(name)}.${index}` as Path<T>;
 
         return (
           <div key={field.id} className="flex flex-col gap-1">
             <div className="flex gap-2 items-start">
               {type === "input" ? (
-                <BasicFormField
-                  name={`${name}.${index}`}
+                <BasicFormField<T>
+                  name={fieldPath}
                   placeholder={placeholder}
                   type="text"
                 />
               ) : (
-                <TextAreaFormField
-                  name={`${name}.${index}`}
+                <TextAreaFormField<T>
+                  name={fieldPath}
                   placeholder={placeholder}
                   rows={rows}
                 />
               )}
 
-              {fields.fields.length > 1 && (
+              {fieldArray.fields.length > 1 && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => remove(index)}
+                  onClick={() => fieldArray.remove(index)}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -65,13 +86,11 @@ const ArrayFieldComponent = ({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => append("")}
+        onClick={() => fieldArray.append("" as any)}
       >
         <Plus className="h-4 w-4 mr-2" />
-        Add {label.slice(0, -1)}
+        {`Add ${label ? label.replace(/s$/i, "") : "item"}`}
       </Button>
     </div>
   );
-};
-
-export default ArrayFieldComponent;
+}

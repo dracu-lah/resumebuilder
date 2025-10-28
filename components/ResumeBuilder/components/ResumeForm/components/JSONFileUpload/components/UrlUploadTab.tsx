@@ -1,8 +1,22 @@
+import React, { FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Globe, Loader2, History } from "lucide-react";
-import { fetchRemoteJson } from "./utils";
+import { fetchRemoteJson, Resume } from "./utils";
+
+export type UrlUploadTabProps = {
+  remoteUrl: string;
+  setRemoteUrl: (v: string) => void;
+  isLoading: boolean;
+  setIsLoading: (v: boolean) => void;
+  setError: (msg: string | null) => void;
+  setSuccess: (ok: boolean) => void;
+  setUploadedData: (data: Resume | null) => void;
+  savedUrls: string[];
+  setSavedUrls: (urls: string[]) => void;
+  onUpload?: (data: Resume) => void;
+};
 
 export default function UrlUploadTab({
   remoteUrl,
@@ -15,12 +29,13 @@ export default function UrlUploadTab({
   savedUrls,
   setSavedUrls,
   onUpload,
-}) {
-  const handleSubmit = (e) => {
+}: UrlUploadTabProps) {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (remoteUrl.trim()) {
+    const trimmed = remoteUrl.trim();
+    if (trimmed) {
       fetchRemoteJson(
-        remoteUrl.trim(),
+        trimmed,
         setIsLoading,
         setError,
         setSuccess,
@@ -42,7 +57,9 @@ export default function UrlUploadTab({
               type="url"
               placeholder="https://example.com/resume.json"
               value={remoteUrl}
-              onChange={(e) => setRemoteUrl(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setRemoteUrl(e.target.value)
+              }
               disabled={isLoading}
               className="flex-1"
             />
@@ -87,7 +104,7 @@ export default function UrlUploadTab({
                 }
                 disabled={isLoading}
               >
-                <Globe className="h-3 w-3 mr-2 flex-shrink-0" />
+                <Globe className="h-3 w-3 mr-2 shrink-0" />
                 <span className="truncate">{url}</span>
               </Button>
             ))}

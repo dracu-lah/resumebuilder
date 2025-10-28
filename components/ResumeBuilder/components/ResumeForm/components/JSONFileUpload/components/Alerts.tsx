@@ -1,7 +1,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { XCircle, CheckCircle } from "lucide-react";
 
-export const ErrorAlert = ({ message }) => (
+export const ErrorAlert = ({ message }: { message: string }) => (
   <Alert variant="destructive">
     <XCircle className="h-4 w-4" />
     <AlertDescription className="text-sm">{message}</AlertDescription>

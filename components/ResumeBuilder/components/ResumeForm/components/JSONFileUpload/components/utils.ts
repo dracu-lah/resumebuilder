@@ -3,79 +3,120 @@ import { resumeSchema, defaultValues } from "../../../resumeSchema";
 
 export const STORAGE_KEY = "resume-upload-urls";
 
-const deepMerge = (target, source) => {
+export type Resume = z.infer<typeof resumeSchema>;
+
+type SetError = (msg: string | null) => void;
+type SetSuccess = (ok: boolean) => void;
+type SetUploadedData = (data: Resume | null) => void;
+type SetSavedUrls = (urls: string[]) => void;
+type SetIsLoading = (v: boolean) => void;
+type OnUpload = (data: Resume) => void;
+
+/**
+ * Deep-merge `source` into `target` while:
+ *  - replacing arrays entirely if source provides them
+ *  - preserving primitive values if source doesn't provide them
+ *
+ * This is intentionally permissive so it can be used with partial JSON uploads.
+ */
+export const deepMerge = <T = any>(
+  target: T,
+  source: Partial<T> | undefined,
+): T => {
   if (Array.isArray(target)) {
-    return source && Array.isArray(source) ? source : target;
-  } else if (typeof target === "object" && target !== null) {
-    return Object.keys(target).reduce((acc, key) => {
-      acc[key] =
-        key in source ? deepMerge(target[key], source[key]) : target[key];
-      return acc;
-    }, {});
+    return (source && Array.isArray(source) ? source : target) as unknown as T;
   }
-  return source !== undefined ? source : target;
+
+  if (typeof target === "object" && target !== null) {
+    const out: Record<string, any> = {};
+    const targetKeys = Object.keys(target as Record<string, any>);
+    for (const key of targetKeys) {
+      const tVal = (target as Record<string, any>)[key];
+      const sVal = source && (source as Record<string, any>)[key];
+      out[key] = key in (source ?? {}) ? deepMerge(tVal, sVal) : tVal;
+    }
+    return out as unknown as T;
+  }
+
+  return (source !== undefined ? source : target) as unknown as T;
 };
 
-const saveUrlToStorage = (url, setSavedUrls) => {
+/** Persist a recent URL list (max 10) into localStorage and call setSavedUrls */
+export const saveUrlToStorage = (url: string, setSavedUrls?: SetSavedUrls) => {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const saved: string[] = raw ? JSON.parse(raw) : [];
     const filtered = saved.filter((u) => u !== url);
     const updated = [url, ...filtered].slice(0, 10);
-    setSavedUrls(updated);
+    setSavedUrls?.(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   } catch (err) {
+    // Non-fatal: just log
+    // eslint-disable-next-line no-console
     console.error("Failed to save URL:", err);
   }
 };
 
+/** Validate merged data with zod and propagate results via callbacks */
 export const validateAndProcessData = (
-  jsonData,
-  setError,
-  setSuccess,
-  setUploadedData,
-  onUpload,
+  jsonData: unknown,
+  setError: SetError,
+  setSuccess: SetSuccess,
+  setUploadedData: SetUploadedData,
+  onUpload?: OnUpload,
 ) => {
   try {
-    // Merge defaults with provided json
-    const merged = deepMerge(defaultValues, jsonData);
+    setError(null);
+    setSuccess(false);
 
-    // Validate only for structure, not strict presence
+    const merged = deepMerge<Resume>(
+      defaultValues as Resume,
+      jsonData as Partial<Resume>,
+    );
+
+    // safeParse to allow partial/missing fields but check structure
     const result = resumeSchema.safeParse(merged);
 
     if (!result.success) {
+      // keep merged values but warn user
+      // eslint-disable-next-line no-console
       console.warn("Validation warnings:", result.error.format());
-      // still proceed with merged values
-      setUploadedData(merged);
+      setUploadedData(merged as Resume);
       setSuccess(true);
       setError(null);
-      if (onUpload) onUpload(merged);
+      if (onUpload) onUpload(merged as Resume);
       return;
     }
 
-    // Success
+    // fully valid
     setUploadedData(result.data);
     setSuccess(true);
     setError(null);
     if (onUpload) onUpload(result.data);
-  } catch (err) {
-    setError(err.message);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    setError(msg);
     setSuccess(false);
     setUploadedData(null);
   }
 };
 
+/** Read a File (JSON) and validate its contents */
 export const validateAndProcessFile = async (
-  file,
-  setError,
-  setSuccess,
-  setUploadedData,
-  onUpload,
+  file: File,
+  setError: SetError,
+  setSuccess: SetSuccess,
+  setUploadedData: SetUploadedData,
+  onUpload?: OnUpload,
 ) => {
   try {
     setError(null);
     setSuccess(false);
 
-    if (file.type !== "application/json" && !file.name.endsWith(".json")) {
+    if (
+      file.type !== "application/json" &&
+      !file.name.toLowerCase().endsWith(".json")
+    ) {
       throw new Error("Please upload a JSON file");
     }
 
@@ -89,25 +130,31 @@ export const validateAndProcessFile = async (
       setUploadedData,
       onUpload,
     );
-  } catch (err) {
-    setError(err.message);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    setError(msg);
     setSuccess(false);
     setUploadedData(null);
   }
 };
 
+/** Fetch a remote JSON, validate and optionally save the URL to localStorage */
 export const fetchRemoteJson = async (
-  url,
-  setIsLoading,
-  setError,
-  setSuccess,
-  setUploadedData,
-  setSavedUrls,
-  onUpload,
+  url: string,
+  setIsLoading: SetIsLoading,
+  setError: SetError,
+  setSuccess: SetSuccess,
+  setUploadedData: SetUploadedData,
+  setSavedUrls?: SetSavedUrls,
+  onUpload?: OnUpload,
+  timeoutMs = 10_000,
 ) => {
   setIsLoading(true);
   setError(null);
   setSuccess(false);
+
+  let controller: AbortController | null = null;
+  let timeoutId: number | undefined;
 
   try {
     const validUrl = new URL(url);
@@ -115,9 +162,12 @@ export const fetchRemoteJson = async (
       throw new Error("Only HTTPS URLs are allowed");
     }
 
+    controller = new AbortController();
+    timeoutId = window.setTimeout(() => controller?.abort(), timeoutMs);
+
     const response = await fetch(url, {
       headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(10000),
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -135,11 +185,19 @@ export const fetchRemoteJson = async (
       onUpload,
     );
     saveUrlToStorage(url, setSavedUrls);
-  } catch (err) {
-    setError(err.name === "AbortError" ? "Request timed out" : err.message);
+  } catch (err: unknown) {
+    // Normalize AbortError
+    const isAbort = (err as any)?.name === "AbortError";
+    const msg = isAbort
+      ? "Request timed out"
+      : err instanceof Error
+        ? err.message
+        : String(err);
+    setError(msg);
     setSuccess(false);
     setUploadedData(null);
   } finally {
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
     setIsLoading(false);
   }
 };

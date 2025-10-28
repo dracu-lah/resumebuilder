@@ -1,3 +1,5 @@
+import React from "react";
+import { useFormContext, FieldValues, Path } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -7,22 +9,32 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { clsx } from "clsx";
-import { useFormContext } from "react-hook-form";
 
-export default function BasicFormField({
+export type BasicFormFieldProps<T extends FieldValues = FieldValues> = {
+  name: Path<T>;
+  placeholder?: string;
+  label?: React.ReactNode;
+  required?: boolean;
+  type?: React.HTMLInputTypeAttribute;
+  className?: string;
+  disabled?: boolean;
+};
+
+export default function BasicFormField<T extends FieldValues = FieldValues>({
   name,
   placeholder,
   label,
-  required,
-  type,
+  required = false,
+  type = "text",
   className,
   disabled = false,
-}) {
-  const { control } = useFormContext();
+}: BasicFormFieldProps<T>) {
+  const { control } = useFormContext<T>();
+
   return (
     <FormField
       disabled={disabled}
-      key={name}
+      key={String(name)}
       control={control}
       name={name}
       render={({ field }) => (
@@ -38,6 +50,7 @@ export default function BasicFormField({
               placeholder={placeholder}
               {...field}
               className={clsx(className)}
+              disabled={disabled}
             />
           </FormControl>
           <FormMessage />

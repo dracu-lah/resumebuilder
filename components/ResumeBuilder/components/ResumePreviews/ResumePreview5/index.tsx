@@ -359,7 +359,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }) => {
                     className="mb-4"
                   >
                     <tbody>
-                      {exp.positions?.map((position, posIndex) => (
+                      {exp.positions?.map((position, posIndex: number) => (
                         <tbody key={posIndex}>
                           <tr>
                             <td width="70%" valign="top">

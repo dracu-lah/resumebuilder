@@ -1,3 +1,5 @@
+import React from "react";
+import { useFormContext, FieldValues, Path } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -6,22 +8,31 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useFormContext } from "react-hook-form";
 
-export default function TextAreaFormField({
+export type TextAreaFormFieldProps<T extends FieldValues = FieldValues> = {
+  name: Path<T>;
+  placeholder?: string;
+  label?: React.ReactNode;
+  required?: boolean;
+  className?: string;
+  disabled?: boolean;
+  rows?: number;
+};
+
+export default function TextAreaFormField<T extends FieldValues = FieldValues>({
   name,
   placeholder,
   label,
-  required,
-  type,
+  required = false,
   className,
   disabled = false,
-  rows = {},
-}) {
-  const { control } = useFormContext();
+  rows = 3,
+}: TextAreaFormFieldProps<T>) {
+  const { control } = useFormContext<T>();
+
   return (
     <FormField
-      key={name}
+      key={String(name)}
       control={control}
       name={name}
       render={({ field }) => (
@@ -35,7 +46,6 @@ export default function TextAreaFormField({
             <Textarea
               rows={rows}
               disabled={disabled}
-              type={type}
               placeholder={placeholder}
               {...field}
               className={className}

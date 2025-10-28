@@ -10,47 +10,53 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Upload, Globe, History } from "lucide-react";
+import { FileText, Upload, Globe } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
 
 import FileUploadTab from "./components/FileUploadTab";
 import UrlUploadTab from "./components/UrlUploadTab";
 import { ErrorAlert, SuccessAlert } from "./components/Alerts";
-import {
-  STORAGE_KEY,
-  validateAndProcessData,
-  validateAndProcessFile,
-  fetchRemoteJson,
-} from "./components/utils";
+import { STORAGE_KEY } from "./components/utils";
 import { defaultValues } from "../../resumeSchema";
+import { Resume } from "./components/utils";
 
-export default function JSONFileUploadModal({ onUpload }) {
-  const [uploadedData, setUploadedData] = useState(null);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [remoteUrl, setRemoteUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [savedUrls, setSavedUrls] = useState([]);
+export type JSONFileUploadModalProps = {
+  onUpload?: (data: Resume) => void;
+};
+
+export default function JSONFileUploadModal({
+  onUpload,
+}: JSONFileUploadModalProps) {
+  const [_uploadedData, setUploadedData] = useState<Resume | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [isDragOver, setIsDragOver] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [remoteUrl, setRemoteUrl] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [savedUrls, setSavedUrls] = useState<string[]>([]);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setSavedUrls(JSON.parse(saved));
+      if (saved) setSavedUrls(JSON.parse(saved) as string[]);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Failed to load saved URLs:", err);
     }
   }, []);
 
   const handleClose = () => {
     setIsOpen(false);
+
+    // small delay preserves closing animation then resets state
     setTimeout(() => {
       setUploadedData(null);
       setError(null);
       setSuccess(false);
       setRemoteUrl("");
       setIsLoading(false);
+      setIsDragOver(false);
     }, 200);
   };
 
@@ -75,7 +81,7 @@ export default function JSONFileUploadModal({ onUpload }) {
               validated.
             </p>
             <DownloadJSONButton
-              data={defaultValues}
+              data={defaultValues as Resume}
               label="Download This JSON , Update & Reupload"
             />
           </DialogDescription>
