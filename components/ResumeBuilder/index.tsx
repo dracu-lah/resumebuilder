@@ -12,37 +12,36 @@ import { type Resume } from "./components/ResumeForm/components/JSONFileUpload/c
 
 const templates = [
   {
-    label: "Default Template",
+    label: "Template 1 [Default]",
     template: ResumePreviewPage1,
   },
 
   {
-    label: "FAANG Inspired Template",
+    label: "Template 2 [FAANG inspired]",
     template: ResumePreviewPage2,
   },
-
   {
-    label: "FAANG Inspired 2 Template",
-    template: ResumePreviewPage3,
+    label: "Template 3",
+    template: ResumePreviewPage6,
   },
 
+  // {
+  //   label: "FAANG Inspired 2 Template",
+  //   template: ResumePreviewPage3,
+  // },
+
   {
-    label: "Vikas Gupta Inspired Template",
+    label: "Template 4",
     template: ResumePreviewPage4,
   },
 
   {
-    label: "Resume Preview 5",
+    label: "Template 5",
     template: ResumePreviewPage5,
   },
 
   {
-    label: "Resume Preview 6",
-    template: ResumePreviewPage6,
-  },
-
-  {
-    label: "Resume with Image",
+    label: "Template 6 [With image]",
     template: ResumePreviewPage7,
   },
 ];

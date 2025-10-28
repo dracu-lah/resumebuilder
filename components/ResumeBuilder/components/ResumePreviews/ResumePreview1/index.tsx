@@ -101,7 +101,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                         className="text-indigo-700"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "#1f6feb", textDecoration: "none" }}
                       >
                         {showLinks
                           ? data.personalInfo.portfolioWebsite.replace(
@@ -120,7 +119,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                         className="text-indigo-700"
                         target="_blank"
                         rel="noreferrer"
-                        style={{ color: "#1f6feb", textDecoration: "none" }}
                       >
                         {showLinks
                           ? data.personalInfo.linkedInUrl.replace(
