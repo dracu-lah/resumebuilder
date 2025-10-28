@@ -114,7 +114,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
               valign="top"
               style={{ fontSize: "18pt", verticalAlign: "top" }}
             >
-              <div style={{ fontWeight: 700, fontSize: "18pt", lineHeight: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: "24pt", lineHeight: 1 }}>
                 {data.personalInfo?.name}
               </div>
 

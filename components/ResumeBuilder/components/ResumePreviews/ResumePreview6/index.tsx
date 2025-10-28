@@ -48,10 +48,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
         page-break-inside: avoid;
       }
       
-      .link-blue {
-        color: #2563eb !important;
-        text-decoration: underline;
-      }
     }
   `,
     documentTitle: "Resume",
@@ -82,9 +78,8 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                       {data.personalInfo.portfolioWebsite && (
                         <a
                           href={data.personalInfo.portfolioWebsite}
-                          className="link-blue"
+                          className="text-indigo-800"
                           style={{
-                            color: "#2563eb",
                             textDecoration: "underline",
                           }}
                         >
@@ -135,9 +130,8 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                     <td align="right">
                       <a
                         href={`mailto:${data.personalInfo.email}`}
-                        className="link-blue"
+                        className="text-indigo-800"
                         style={{
-                          color: "#2563eb",
                           textDecoration: "underline",
                         }}
                       >
@@ -429,11 +423,10 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                         {project.link ? (
                           <a
                             href={project.link}
-                            className="link-blue"
+                            className="text-indigo-800"
                             style={{
                               fontSize: "9pt",
                               fontWeight: "bold",
-                              color: "#2563eb",
                               textDecoration: "underline",
                             }}
                           >
