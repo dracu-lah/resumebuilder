@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resume Builder mostly for Developers
 
-## Getting Started
+![Preview](public/og-image.png)
 
-First, run the development server:
+A modern resume builder application designed specifically for developers to create, update, and manage professional resumes with ease.
+
+## Features
+
+- 📄 **Resume Upload & Update**: Upload your existing resume (PDF) and convert it to editable format
+- 🔄 **Import/Export**: Save your resume as JSON for easy sharing and future editing
+- ⬇️ **Download Options**: Export your resume in multiple formats (PDF)
+- 🎨 **Custom Templates**: Choose from developer-friendly resume templates
+- 🔍 **Real-time Preview**: See changes as you edit
+- 🔒 **Local Storage**: Your data stays in your browser
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- pnpm or npm
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/resume-builder.git
+cd resume-builder
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+# or
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Set up environment variables:
 
-## Learn More
+```bash
+cp .env.example .env
+```
 
-To learn more about Next.js, take a look at the following resources:
+(Edit the `.env` file if you want to use the Gemini API for AI features)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Running the App
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Start the development server:
 
-## Deploy on Vercel
+```bash
+pnpm dev
+# or
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Self-Hosting
+
+### Building for Production
+
+```bash
+pnpm build
+# or
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+pnpm preview
+# or
+npm run preview
+```
+
+### Deployment
+
+The `dist` folder contains static files that can be deployed to any web server:
+
+- Vercel
+- Netlify
+- GitHub Pages
+- Any static hosting service
+
+## Configuration
+
+The `.env.example` file contains optional environment variables:
+
+- `NEXT_PUBLIC_GEMINI_API_KEY`: For AI-powered features (optional)
+- Other customization options
+
+## Contributing
+
+Contributions are welcome! Please open an issue or pull request.
+
+## License
+
+MIT
+
+---
+
+✨ **Happy resume building!** ✨
