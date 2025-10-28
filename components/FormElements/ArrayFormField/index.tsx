@@ -4,93 +4,90 @@ import BasicFormField from "@/components/FormElements/BasicFormField";
 import TextAreaFormField from "@/components/FormElements/TextAreaFormField";
 import {
   useFormContext,
-  FieldValues,
-  Path,
-  UseFieldArrayReturn,
-  ArrayPath,
+  FieldArrayWithId,
+  UseFieldArrayAppend,
+  UseFieldArrayRemove,
+  FieldErrors,
 } from "react-hook-form";
 
-type ArrayFieldComponentProps<T extends FieldValues = FieldValues> = {
-  fieldArray: UseFieldArrayReturn<T, ArrayPath<T>>;
-  name: Path<T>;
+interface ArrayFieldComponentProps {
+  fields: {
+    fields: FieldArrayWithId<any, string, "id">[];
+  };
+  append: UseFieldArrayAppend<any, string>;
+  remove: UseFieldArrayRemove;
+  name: string;
   placeholder?: string;
-  label?: string;
+  label: string;
   type?: "input" | "textarea";
   rows?: number;
-};
+}
 
-export default function ArrayFieldComponent<
-  T extends FieldValues = FieldValues,
->({
-  fieldArray,
+const ArrayFieldComponent: React.FC<ArrayFieldComponentProps> = ({
+  fields,
+  append,
+  remove,
   name,
-  placeholder,
-  label = "",
+  placeholder = "",
+  label,
   type = "input",
   rows = 3,
-}: ArrayFieldComponentProps<T>) {
+}) => {
   const {
     formState: { errors },
-  } = useFormContext<T>();
-
-  const getFieldError = (index: number) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ((errors as any)?.[String(name)]?.[index]?.message as string | undefined) ??
-    undefined;
+  } = useFormContext<Record<string, any>>();
 
   return (
-    <div key={String(name)} className="space-y-2">
-      {label && <span className="text-sm font-medium">{label}</span>}
-
-      {fieldArray.fields.map((field, index) => {
-        const fieldError = getFieldError(index);
-        const fieldPath = `${String(name)}.${index}` as Path<T>;
-
+    <div key={name} className="space-y-2">
+      <span className="text-sm font-medium">{label}</span>
+      {fields.fields.map((field, index) => {
+        const fieldError = (errors?.[name] as FieldErrors)?.[index]?.message as
+          | string
+          | undefined;
         return (
           <div key={field.id} className="flex flex-col gap-1">
             <div className="flex gap-2 items-start">
               {type === "input" ? (
-                <BasicFormField<T>
-                  name={fieldPath}
+                <BasicFormField
+                  name={`${name}.${index}`}
                   placeholder={placeholder}
                   type="text"
                 />
               ) : (
-                <TextAreaFormField<T>
-                  name={fieldPath}
+                <TextAreaFormField
+                  name={`${name}.${index}`}
                   placeholder={placeholder}
                   rows={rows}
                 />
               )}
-
-              {fieldArray.fields.length > 1 && (
+              {fields.fields.length > 1 && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => fieldArray.remove(index)}
+                  onClick={() => remove(index)}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
               )}
             </div>
-
             {fieldError && (
               <span className="text-xs text-red-500 ml-1">{fieldError}</span>
             )}
           </div>
         );
       })}
-
       <Button
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => fieldArray.append("" as any)}
+        onClick={() => append("")}
       >
         <Plus className="h-4 w-4 mr-2" />
-        {`Add ${label ? label.replace(/s$/i, "") : "item"}`}
+        Add {label.slice(0, -1)}
       </Button>
     </div>
   );
-}
+};
+
+export default ArrayFieldComponent;

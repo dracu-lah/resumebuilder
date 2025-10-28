@@ -56,6 +56,7 @@ export const resumeSchema = z.object({
   interests: z.array(z.string()),
 });
 
+export type Resume = z.infer<typeof resumeSchema>;
 export const defaultValues = {
   personalInfo: {
     name: "",

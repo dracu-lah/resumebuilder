@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Minus, Eye } from "lucide-react";
 import { sampleData } from "./sampleData";
-import { defaultValues, resumeSchema } from "./resumeSchema";
+import { defaultValues, Resume, resumeSchema } from "./resumeSchema";
 import { ModeToggle } from "@/components/shared/ModeToggle";
 import JSONFileUpload from "./components/JSONFileUpload";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -24,8 +24,6 @@ import { ChevronDown } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import { ChevronsDown } from "lucide-react";
 import OldResumeUpload from "./components/OldResumeUpload";
-import z from "zod";
-type Resume = z.infer<typeof resumeSchema>;
 type ResumeFormPageProps = {
   setResumeData: (data: Resume) => void;
   setViewMode: (mode: "preview" | "edit") => void;
@@ -39,33 +37,56 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
     defaultValues,
     mode: "onChange",
   });
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    reset,
-  } = form;
-  const experienceFields = useFieldArray({ control, name: "experience" });
-  const educationFields = useFieldArray({ control, name: "education" });
-  const projectFields = useFieldArray({ control, name: "projects" });
-  const achievementFields = useFieldArray({ control, name: "achievements" });
-  const interestFields = useFieldArray({ control, name: "interests" });
+  const experienceFields = useFieldArray({
+    control: form.control,
+    name: "experience",
+  });
+  const educationFields = useFieldArray({
+    control: form.control,
+    name: "education",
+  });
+  const projectFields = useFieldArray({
+    control: form.control,
+    name: "projects",
+  });
+  const achievementFields = useFieldArray({
+    control: form.control,
+    name: "achievements",
+  });
+  const interestFields = useFieldArray({
+    control: form.control,
+    name: "interests",
+  });
 
   // Skill field arrays
-  const languageFields = useFieldArray({ control, name: "skills.languages" });
-  const frameworkFields = useFieldArray({ control, name: "skills.frameworks" });
-  const databaseFields = useFieldArray({ control, name: "skills.databases" });
+  const languageFields = useFieldArray({
+    control: form.control,
+    name: "skills.languages",
+  });
+  const frameworkFields = useFieldArray({
+    control: form.control,
+    name: "skills.frameworks",
+  });
+  const databaseFields = useFieldArray({
+    control: form.control,
+    name: "skills.databases",
+  });
   const architectureFields = useFieldArray({
-    control,
+    control: form.control,
     name: "skills.architectures",
   });
-  const toolFields = useFieldArray({ control, name: "skills.tools" });
+  const toolFields = useFieldArray({
+    control: form.control,
+    name: "skills.tools",
+  });
   const methodologyFields = useFieldArray({
-    control,
+    control: form.control,
     name: "skills.methodologies",
   });
-  const otherFields = useFieldArray({ control, name: "skills.other" });
+  const otherFields = useFieldArray({
+    control: form.control,
+    name: "skills.other",
+  });
 
   useEffect(() => {
     const savedData = localStorage.getItem("resumeData");
@@ -75,13 +96,13 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
         const result = resumeSchema.safeParse(parsedData);
 
         if (result.success) {
-          reset(result.data);
+          form.reset(result.data);
         }
       } catch (error) {
         console.error("Failed to parse resume data:", error);
       }
     }
-  }, [reset]);
+  }, [form.reset]);
 
   const onSubmit = (data: Resume) => {
     setResumeData(data);
@@ -90,18 +111,18 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
   };
 
   const loadSampleData = () => {
-    reset(sampleData);
+    form.reset(sampleData);
   };
 
   const clear = () => {
-    reset(defaultValues);
+    form.reset(defaultValues);
   };
   const saveToLocal = () => {
-    if (watch() && watch().personalInfo.name !== "") {
-      localStorage.setItem("resumeData", JSON.stringify(watch()));
+    if (form.watch() && form.watch().personalInfo.name !== "") {
+      localStorage.setItem("resumeData", JSON.stringify(form.watch()));
     }
   };
-  useAutoSave(control, saveToLocal, 2000);
+  useAutoSave(form.control, saveToLocal, 2000);
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black p-4">
       <div className="max-w-4xl mx-auto">
@@ -114,7 +135,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
         </div>
         <div className="flex flex-col gap-4 ">
           <div className="grid grid-cols-2 gap-4">
-            <Button onClick={handleSubmit(onSubmit)}>
+            <Button onClick={form.handleSubmit(onSubmit)}>
               <Eye className="h-4 w-4 mr-2" />
               Generate Resume
             </Button>
@@ -125,15 +146,15 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <JSONFileUpload onUpload={(data) => reset(data)} />
+            <JSONFileUpload onUpload={(data) => form.reset(data)} />
             <Button onClick={loadSampleData} variant="outline">
               <LoaderPinwheelIcon />
               Load Sample Data
             </Button>
-            <OldResumeUpload onUpload={(data) => reset(data)} />
+            <OldResumeUpload onUpload={(data) => form.reset(data)} />
           </div>
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Tabs defaultValue="personal" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-1 sm:grid-cols-6 min-h-[400px] md:min-h-full">
                   <TabsTrigger value="personal">Personal</TabsTrigger>
@@ -230,7 +251,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                             </div>
 
                             <Controller
-                              control={control}
+                              control={form.control}
                               name={`experience.${expIndex}.positions`}
                               render={({ field: { value, onChange } }) => (
                                 <div className="space-y-4">
@@ -260,7 +281,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                                           Key Achievements
                                         </label>
                                         <Controller
-                                          control={control}
+                                          control={form.control}
                                           name={`experience.${expIndex}.positions.${posIndex}.achievements`}
                                           render={({
                                             field: {
@@ -294,7 +315,8 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
 
                                                       <span className="text-sm text-red-400">
                                                         {
-                                                          errors?.experience?.[
+                                                          form.formState.errors
+                                                            ?.experience?.[
                                                             expIndex
                                                           ]?.positions?.[
                                                             posIndex
@@ -416,7 +438,6 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                                 achievements: [],
                               },
                             ],
-                            id: "e95ff1f8-fb02-435e-b668-ffde0c0da3c9",
                           })
                         }
                       >
@@ -607,7 +628,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                             <div className="mb-4">
                               <Label className="mb-2">Technologies Used</Label>
                               <Controller
-                                control={control}
+                                control={form.control}
                                 name={`projects.${index}.technologies`}
                                 render={({ field: { value, onChange } }) => (
                                   <div className="space-y-2">
@@ -662,7 +683,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                             <div className="mb-4">
                               <Label className="mb-2">Key Features</Label>
                               <Controller
-                                control={control}
+                                control={form.control}
                                 name={`projects.${index}.features`}
                                 render={({ field: { value, onChange } }) => (
                                   <div className="space-y-2">
@@ -714,7 +735,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                             </div>
 
                             <div className="flex gap-2 flex-wrap">
-                              {/* Move Controls */}
+                              {/* Move form.controls */}
                               {projectFields.fields.length > 1 && (
                                 <div className="flex gap-1">
                                   <Button
