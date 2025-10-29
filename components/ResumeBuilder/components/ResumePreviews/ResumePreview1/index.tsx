@@ -193,81 +193,83 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
       </section>
 
       {/* Experience */}
-      <section style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
-          EXPERIENCE
-        </div>
+      {Array.isArray(data.experience) && data.experience.length > 0 && (
+        <section style={{ marginBottom: 18 }}>
+          <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
+            EXPERIENCE
+          </div>
 
-        {Array.isArray(data.experience) &&
-          data.experience.map((exp, idx) => (
-            <div key={idx} style={{ marginBottom: 12 }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "baseline",
-                }}
-              >
-                <div style={{ fontSize: "12pt", fontWeight: 700 }}>
-                  {exp.company}
+          {Array.isArray(data.experience) &&
+            data.experience.map((exp, idx) => (
+              <div key={idx} style={{ marginBottom: 12 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                  }}
+                >
+                  <div style={{ fontSize: "12pt", fontWeight: 700 }}>
+                    {exp.company}
+                  </div>
                 </div>
-              </div>
 
-              {Array.isArray(exp.positions) &&
-                exp.positions.map((position, pIdx) => (
-                  <div key={pIdx} style={{ paddingTop: 10 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                        gap: 12,
-                      }}
-                    >
-                      <div style={{ fontSize: "11pt", fontWeight: 600 }}>
-                        {position.title}
-                      </div>
+                {Array.isArray(exp.positions) &&
+                  exp.positions.map((position, pIdx) => (
+                    <div key={pIdx} style={{ paddingTop: 10 }}>
                       <div
                         style={{
-                          fontSize: "10pt",
-                          fontWeight: 500,
-                          color: "#444",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                          gap: 12,
                         }}
                       >
-                        {position.duration}
-                      </div>
-                    </div>
-
-                    {Array.isArray(position.achievements) &&
-                      position.achievements.filter(Boolean).length > 0 && (
-                        <ul
+                        <div style={{ fontSize: "11pt", fontWeight: 600 }}>
+                          {position.title}
+                        </div>
+                        <div
                           style={{
-                            marginTop: 8,
-                            paddingLeft: 18,
                             fontSize: "10pt",
-                            lineHeight: 1.4,
+                            fontWeight: 500,
+                            color: "#444",
                           }}
                         >
-                          {position.achievements
-                            .filter(Boolean)
-                            .map((ach, aIdx) => (
-                              <li
-                                key={aIdx}
-                                style={{
-                                  marginBottom: 6,
-                                  textAlign: "justify",
-                                }}
-                              >
-                                {ach}
-                              </li>
-                            ))}
-                        </ul>
-                      )}
-                  </div>
-                ))}
-            </div>
-          ))}
-      </section>
+                          {position.duration}
+                        </div>
+                      </div>
+
+                      {Array.isArray(position.achievements) &&
+                        position.achievements.filter(Boolean).length > 0 && (
+                          <ul
+                            style={{
+                              marginTop: 8,
+                              paddingLeft: 18,
+                              fontSize: "10pt",
+                              lineHeight: 1.4,
+                            }}
+                          >
+                            {position.achievements
+                              .filter(Boolean)
+                              .map((ach, aIdx) => (
+                                <li
+                                  key={aIdx}
+                                  style={{
+                                    marginBottom: 6,
+                                    textAlign: "justify",
+                                  }}
+                                >
+                                  {ach}
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                    </div>
+                  ))}
+              </div>
+            ))}
+        </section>
+      )}
 
       {/* Technical Skills */}
       <section style={{ marginBottom: 18 }}>
