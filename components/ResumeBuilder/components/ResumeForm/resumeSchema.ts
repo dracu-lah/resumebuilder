@@ -54,6 +54,7 @@ export const resumeSchema = z.object({
   ),
   achievements: z.array(z.string()),
   interests: z.array(z.string()),
+  knownLanguages: z.array(z.string()),
 });
 
 export type Resume = z.infer<typeof resumeSchema>;
@@ -108,4 +109,5 @@ export const defaultValues = {
   ],
   achievements: [""],
   interests: [""],
+  knownLanguages: [""],
 };

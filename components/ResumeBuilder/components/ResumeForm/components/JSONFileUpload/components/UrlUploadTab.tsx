@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Globe, Loader2, History } from "lucide-react";
-import { fetchRemoteJson, Resume } from "./utils";
+import { fetchRemoteJson } from "./utils";
+import { Resume } from "../../../resumeSchema";
 
 export type UrlUploadTabProps = {
   remoteUrl: string;

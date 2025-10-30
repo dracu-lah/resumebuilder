@@ -118,7 +118,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Tabs defaultValue="personal" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-6 min-h-[400px] md:min-h-full">
+                <TabsList className="grid w-full grid-cols-1 lg:grid-cols-6 min-h-[400px] lg:min-h-full">
                   <TabsTrigger value="personal">Personal</TabsTrigger>
                   <TabsTrigger value="experience">Experience</TabsTrigger>
                   <TabsTrigger value="skills">Skills</TabsTrigger>
@@ -141,14 +141,20 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                         required
                       />
 
-                      <BasicFormField
-                        name="personalInfo.title"
-                        label="Professional Title"
-                        placeholder="e.g. Senior Software Developer"
-                        required
-                      />
-
                       <div className="grid sm:grid-cols-2 gap-4">
+                        <BasicFormField
+                          name="personalInfo.title"
+                          label="Professional Title"
+                          placeholder="e.g. Senior Software Developer"
+                          required
+                        />
+                        <BasicFormField
+                          name="personalInfo.location"
+                          label="Location"
+                          type="text"
+                          placeholder="Thrissur,Kerala"
+                          required
+                        />
                         <BasicFormField
                           name="personalInfo.phone"
                           label="Phone Number"
@@ -171,13 +177,6 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                           label="Email Address"
                           type="email"
                           placeholder="your.email@example.com"
-                          required
-                        />
-                        <BasicFormField
-                          name="personalInfo.location"
-                          label="Location"
-                          type="text"
-                          placeholder="Thrissur,Kerala"
                           required
                         />
                       </div>
@@ -371,7 +370,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                               )}
                             />
 
-                            {experienceFields.fields.length > 1 && (
+                            {experienceFields.fields.length > 0 && (
                               <Button
                                 type="button"
                                 variant="destructive"
@@ -420,7 +419,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                       <ArrayFormField
                         name="skills.languages"
                         placeholder="e.g. JavaScript"
-                        label="Languages"
+                        label="Programming Languages"
                       />
 
                       <ArrayFormField
@@ -495,7 +494,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                               className="mb-4"
                             />
 
-                            {educationFields.fields.length > 1 && (
+                            {educationFields.fields.length > 0 && (
                               <Button
                                 type="button"
                                 variant="destructive"
@@ -800,6 +799,19 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                           name="interests"
                           placeholder="e.g. Machine Learning"
                           label="Interests"
+                        />
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Known Languages</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ArrayFormField
+                          name="knownLanguages"
+                          placeholder="e.g. English, Hindi"
+                          label="Known Languages"
                         />
                       </CardContent>
                     </Card>

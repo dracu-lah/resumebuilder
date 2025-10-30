@@ -17,8 +17,7 @@ import FileUploadTab from "./components/FileUploadTab";
 import UrlUploadTab from "./components/UrlUploadTab";
 import { ErrorAlert, SuccessAlert } from "./components/Alerts";
 import { STORAGE_KEY } from "./components/utils";
-import { defaultValues } from "../../resumeSchema";
-import { Resume } from "./components/utils";
+import { defaultValues, Resume } from "../../resumeSchema";
 
 export type JSONFileUploadModalProps = {
   onUpload?: (data: Resume) => void;

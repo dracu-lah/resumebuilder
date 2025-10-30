@@ -1,7 +1,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { validateAndProcessFile, Resume } from "./utils";
+import { validateAndProcessFile } from "./utils";
+import { Resume } from "../../../resumeSchema";
 
 export type FileUploadTabProps = {
   isDragOver: boolean;
