@@ -1,67 +1,29 @@
-import { toast } from "sonner";
-import { useReactToPrint } from "react-to-print";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Download, Edit } from "lucide-react";
-import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
-type ResumeFormType = {
-  resumeData: Resume;
-  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
-};
-const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
-  const [showLinks, setShowLinks] = useState(false);
-  const [showEducation, setShowEducation] = useState(true);
-  const [isDesignMode, setIsDesignMode] = useState(false);
-  const contentRef = useRef(null);
+import { useResume } from "../components/ResumeScaffold";
 
-  const reactToPrintFn = useReactToPrint({
-    contentRef,
-    preserveAfterPrint: true,
-    pageStyle: `
-      @page { size: A4; margin: 0.5in; }
-      @media print {
-        body { -webkit-print-color-adjust: exact; color-adjust: exact; }
-        .resume-container { width:100%; max-width:none; margin:0; padding:0; font-size:10pt; line-height:1.1; }
-        .resume-section { break-inside: avoid; page-break-inside: avoid; }
-        .no-print { display: none !important; }
-        a { color: blue !important; text-decoration: underline; }
-      }
-    `,
-    documentTitle: "Resume",
-  });
+const ResumePreviewPage = () => {
+  const { resumeData, showLinks } = useResume();
+  console.log("resumeData", resumeData);
 
-  const ResumePreview = ({ data }: { data: Resume }) => (
-    <div
-      ref={contentRef}
-      contentEditable={isDesignMode}
-      className="bg-white  p-[0.5in] max-w-4xl resume-container mx-auto text-black"
-      style={{
-        fontFamily: 'Times, "Times New Roman", serif',
-        fontSize: "11pt",
-        lineHeight: "1.15",
-      }}
-    >
+  return (
+    <>
       {/* Header table: left = location/links, center = name/title, right = contact */}
       <table width="100%" cellPadding={6} cellSpacing={0} className="mb-4 ">
         <tbody>
           <tr>
             <td width="33%" valign="top" style={{ fontSize: "10pt" }}>
               {/* left: location + links */}
-              <div>{data.personalInfo.location || "Kerala, India"}</div>
+              <div>{resumeData.personalInfo.location || "Kerala, India"}</div>
 
-              {data.personalInfo.portfolioWebsite && (
+              {resumeData.personalInfo.portfolioWebsite && (
                 <div style={{ marginTop: 6 }}>
                   <a
-                    href={data.personalInfo.portfolioWebsite}
+                    href={resumeData.personalInfo.portfolioWebsite}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-700"
                   >
                     {showLinks
-                      ? data.personalInfo.portfolioWebsite.replace(
+                      ? resumeData.personalInfo.portfolioWebsite.replace(
                           /^https?:\/\//,
                           "",
                         )
@@ -81,10 +43,15 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
               <div style={{ textAlign: "center" }}>
                 <h1
                   className="font-bold"
-                  style={{ fontSize: "16pt", letterSpacing: "1pt", margin: 0 }}
+                  style={{
+                    fontSize: "16pt",
+                    width: "320px",
+                    letterSpacing: "1pt",
+                    margin: 0,
+                  }}
                 >
-                  {data.personalInfo.name
-                    ? data.personalInfo.name.toUpperCase()
+                  {resumeData.personalInfo.name
+                    ? resumeData.personalInfo.name.toUpperCase()
                     : ""}
                 </h1>
               </div>
@@ -97,17 +64,20 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
               style={{ fontSize: "10pt" }}
             >
               {/* right: contact */}
-              {data.personalInfo.phone && <div>{data.personalInfo.phone}</div>}
-              {data.personalInfo.email && (
-                <div style={{ marginTop: 6 }}>{data.personalInfo.email}</div>
+              {resumeData.personalInfo.phone && (
+                <div>{resumeData.personalInfo.phone}</div>
+              )}
+              {resumeData.personalInfo.email && (
+                <div style={{ marginTop: 6 }}>
+                  {resumeData.personalInfo.email}
+                </div>
               )}
             </td>
           </tr>
         </tbody>
       </table>
-
       {/* Summary */}
-      {data.personalInfo.summary && (
+      {resumeData.personalInfo.summary && (
         <table
           width="100%"
           cellPadding={6}
@@ -131,14 +101,13 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                     marginTop: 6,
                   }}
                 >
-                  {data.personalInfo.summary}
+                  {resumeData.personalInfo.summary}
                 </p>
               </td>
             </tr>
           </tbody>
         </table>
       )}
-
       {/* Skills */}
       <table
         width="100%"
@@ -150,48 +119,50 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
           <tr>
             <td>
               <div style={{ fontSize: "10pt", lineHeight: "1.2" }}>
-                {data.skills.languages?.filter(Boolean).length > 0 && (
+                {resumeData.skills.languages?.filter(Boolean).length > 0 && (
                   <div>
                     <span className="font-bold">
                       Programming Languages & Frameworks:{" "}
                     </span>
-                    {data.skills.languages.filter(Boolean).join(", ")}
+                    {resumeData.skills.languages.filter(Boolean).join(", ")}
                   </div>
                 )}
-                {data.skills.frameworks?.filter(Boolean).length > 0 && (
+                {resumeData.skills.frameworks?.filter(Boolean).length > 0 && (
                   <div style={{ marginTop: 4 }}>
                     <span className="font-bold">Frameworks & Libraries: </span>
-                    {data.skills.frameworks.filter(Boolean).join(", ")}
+                    {resumeData.skills.frameworks.filter(Boolean).join(", ")}
                   </div>
                 )}
-                {data.skills.databases?.filter(Boolean).length > 0 && (
+                {resumeData.skills.databases?.filter(Boolean).length > 0 && (
                   <div style={{ marginTop: 4 }}>
                     <span className="font-bold">Databases & ORM: </span>
-                    {data.skills.databases.filter(Boolean).join(", ")}
+                    {resumeData.skills.databases.filter(Boolean).join(", ")}
                   </div>
                 )}
-                {data.skills.tools?.filter(Boolean).length > 0 && (
+                {resumeData.skills.tools?.filter(Boolean).length > 0 && (
                   <div style={{ marginTop: 4 }}>
                     <span className="font-bold">Cloud & DevOps Tools: </span>
-                    {data.skills.tools.filter(Boolean).join(", ")}
+                    {resumeData.skills.tools.filter(Boolean).join(", ")}
                   </div>
                 )}
-                {data.skills.architectures?.filter(Boolean).length > 0 && (
+                {resumeData.skills.architectures?.filter(Boolean).length >
+                  0 && (
                   <div style={{ marginTop: 4 }}>
                     <span className="font-bold">Architectures: </span>
-                    {data.skills.architectures.filter(Boolean).join(", ")}
+                    {resumeData.skills.architectures.filter(Boolean).join(", ")}
                   </div>
                 )}
-                {data.skills.methodologies?.filter(Boolean).length > 0 && (
+                {resumeData.skills.methodologies?.filter(Boolean).length >
+                  0 && (
                   <div style={{ marginTop: 4 }}>
                     <span className="font-bold">Software Practices: </span>
-                    {data.skills.methodologies.filter(Boolean).join(", ")}
+                    {resumeData.skills.methodologies.filter(Boolean).join(", ")}
                   </div>
                 )}
-                {data.skills.other?.filter(Boolean).length > 0 && (
+                {resumeData.skills.other?.filter(Boolean).length > 0 && (
                   <div style={{ marginTop: 4 }}>
                     <span className="font-bold">Other Skills: </span>
-                    {data.skills.other.filter(Boolean).join(", ")}
+                    {resumeData.skills.other.filter(Boolean).join(", ")}
                   </div>
                 )}
               </div>
@@ -199,7 +170,6 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
           </tr>
         </tbody>
       </table>
-
       {/* Employment */}
       <table
         width="100%"
@@ -217,7 +187,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                 EMPLOYMENT
               </h2>
 
-              {data.experience.map((exp, idx) =>
+              {resumeData.experience.map((exp, idx) =>
                 exp.positions.map((position, pIdx) => (
                   <table
                     key={`${idx}-${pIdx}`}
@@ -273,9 +243,8 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
           </tr>
         </tbody>
       </table>
-
       {/* Projects */}
-      {data.projects?.length > 0 && (
+      {resumeData.projects?.length > 0 && (
         <table
           width="100%"
           cellPadding={6}
@@ -293,7 +262,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                 </h2>
 
                 <div style={{ marginTop: 8 }}>
-                  {data.projects.map((project, pIdx) => (
+                  {resumeData.projects.map((project, pIdx) => (
                     <table
                       key={pIdx}
                       width="100%"
@@ -329,66 +298,60 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
           </tbody>
         </table>
       )}
-
       {/* Education */}
-      {showEducation && (
-        <table
-          width="100%"
-          cellPadding={6}
-          cellSpacing={0}
-          className="mb-3 resume-section"
-        >
-          <tbody>
-            <tr>
-              <td>
-                <h2
-                  className="font-bold mb-1"
-                  style={{ fontSize: "11pt", margin: 0 }}
-                >
-                  EDUCATION
-                </h2>
+      <table
+        width="100%"
+        cellPadding={6}
+        cellSpacing={0}
+        className="mb-3 resume-section"
+      >
+        <tbody>
+          <tr>
+            <td>
+              <h2
+                className="font-bold mb-1"
+                style={{ fontSize: "11pt", margin: 0 }}
+              >
+                EDUCATION
+              </h2>
 
-                <div style={{ marginTop: 8 }}>
-                  {data.education.map((edu, eIdx) => (
-                    <table
-                      key={eIdx}
-                      width="100%"
-                      cellPadding={4}
-                      cellSpacing={0}
-                      style={{ marginBottom: 8 }}
-                    >
-                      <tbody>
-                        <tr>
-                          <td style={{ fontSize: "10pt" }}>
-                            {edu.institution}
-                          </td>
-                          <td
-                            align="right"
-                            style={{ fontSize: "10pt", whiteSpace: "nowrap" }}
-                          >
-                            {edu.year || ""}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td
-                            colSpan={2}
-                            style={{ fontSize: "10pt", paddingTop: 4 }}
-                          >
-                            ● {edu.degree}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  ))}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      )}
-
+              <div style={{ marginTop: 8 }}>
+                {resumeData.education.map((edu, eIdx) => (
+                  <table
+                    key={eIdx}
+                    width="100%"
+                    cellPadding={4}
+                    cellSpacing={0}
+                    style={{ marginBottom: 8 }}
+                  >
+                    <tbody>
+                      <tr>
+                        <td style={{ fontSize: "10pt" }}>{edu.institution}</td>
+                        <td
+                          align="right"
+                          style={{ fontSize: "10pt", whiteSpace: "nowrap" }}
+                        >
+                          {edu.year || ""}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          colSpan={2}
+                          style={{ fontSize: "10pt", paddingTop: 4 }}
+                        >
+                          ● {edu.degree}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                ))}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       {/* Achievements */}
-      {data.achievements?.filter(Boolean).length > 0 && (
+      {resumeData.achievements?.filter(Boolean).length > 0 && (
         <table
           width="100%"
           cellPadding={6}
@@ -412,7 +375,7 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                     lineHeight: "1.2",
                   }}
                 >
-                  {data.achievements.filter(Boolean).map((ach, i) => (
+                  {resumeData.achievements.filter(Boolean).map((ach, i) => (
                     <li key={i} style={{ marginBottom: 6 }}>
                       ● {ach}
                     </li>
@@ -423,9 +386,8 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
           </tbody>
         </table>
       )}
-
       {/* Interests */}
-      {data.interests?.filter(Boolean).length > 0 && (
+      {resumeData.interests?.filter(Boolean).length > 0 && (
         <table
           width="100%"
           cellPadding={6}
@@ -442,76 +404,14 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                   INTERESTS
                 </h2>
                 <p style={{ fontSize: "10pt", marginTop: 8 }}>
-                  {data.interests.filter(Boolean).join(", ")}
+                  {resumeData.interests.filter(Boolean).join(", ")}
                 </p>
               </td>
             </tr>
           </tbody>
         </table>
       )}
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
-      <div className="sticky top-0 bg-white dark:bg-zinc-900 shadow-sm pb-4 px-4 flex flex-col md:flex-row gap-4 justify-between items-center no-print">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">FAANG Inspired Resume Preview</h1>
-
-          <div className="flex gap-2 flex-col md:flex-row">
-            <div className="flex gap-2 flex-row">
-              <Button onClick={reactToPrintFn}>
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF
-              </Button>
-              <DownloadJSONButton data={resumeData} />
-            </div>
-
-            <Button onClick={() => setViewMode("edit")} variant="outline">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Resume
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex gap-6">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="show-links"
-              checked={showLinks}
-              onCheckedChange={setShowLinks}
-            />
-            <Label htmlFor="show-links">Show Links</Label>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="disable-education"
-              checked={showEducation}
-              onCheckedChange={setShowEducation}
-            />
-            <Label htmlFor="disable-education">Show Education</Label>
-          </div>
-
-          <div className="hidden md:flex items-center space-x-2">
-            <Switch
-              id="design-mode"
-              checked={isDesignMode}
-              onCheckedChange={(e) => {
-                setIsDesignMode(e);
-                if (e) toast.info("These changes won't be persisted!");
-              }}
-            />
-            <Label htmlFor="design-mode">Live Text Edit Mode</Label>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4 overflow-scroll">
-        <ResumePreview data={resumeData} />
-      </div>
-    </div>
+    </>
   );
 };
-
 export default ResumePreviewPage;

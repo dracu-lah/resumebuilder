@@ -1,78 +1,34 @@
 import { useState } from "react";
-import ResumePreviewPage1 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview1";
-import ResumePreviewPage2 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview2";
-import ResumePreviewPage3 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview3";
-import ResumePreviewPage4 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview4";
-import ResumePreviewPage5 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview5";
-import ResumePreviewPage6 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview6";
-import ResumePreviewPage7 from "@/components/ResumeBuilder/components/ResumePreviews/ResumePreview7";
 import ResumeFormPage from "@/components/ResumeBuilder/components/ResumeForm";
+import { Resume } from "./components/ResumeForm/resumeSchema";
+import ResumeTemplates, { templates } from "./components/ResumeTemplates";
+import { Edit } from "lucide-react";
 import { Button } from "../ui/button";
-import { type Resume } from "./components/ResumeForm/components/JSONFileUpload/components/utils";
 import ResumeScaffold from "./components/ResumePreviews/components/ResumeScaffold";
 
-const templates = [
-  {
-    label: "Template 1 [Default]",
-    template: ResumePreviewPage1,
-  },
-
-  {
-    label: "Template 2",
-    template: ResumePreviewPage6,
-  },
-  {
-    label: "Template 3 [FAANG inspired]",
-    template: ResumePreviewPage2,
-  },
-
-  // {
-  //   label: "FAANG Inspired 2 Template",
-  //   template: ResumePreviewPage3,
-  // },
-
-  {
-    label: "Template 4",
-    template: ResumePreviewPage4,
-  },
-
-  {
-    label: "Template 5",
-    template: ResumePreviewPage5,
-  },
-
-  {
-    label: "Template 6 [With image]",
-    template: ResumePreviewPage7,
-  },
-];
 export default function ResumeBuilder() {
   const [viewMode, setViewMode] = useState<"preview" | "edit">("edit");
   const [resumeData, setResumeData] = useState<Resume | null>(null);
-  const [template, setTemplate] = useState(templates[0]);
+  const [template, setTemplate] = useState<string>(templates[0].label);
 
   if (viewMode === "preview" && resumeData) {
     return (
-      <div className="bg-white dark:bg-zinc-900">
-        <div className="p-4 flex   flex-col justify-center items-center  gap-2">
-          <h1 className="text-xl font-semibold">Available Templates</h1>
-          <div className="flex flex-col overflow-auto w-full justify-center md:flex-row gap-2 ">
-            {templates.map((temp, key) => (
-              <Button
-                key={key}
-                variant={template === temp ? "default" : "outline"}
-                onClick={() => setTemplate(temp)}
-              >
-                {temp.label}
-              </Button>
-            ))}
-          </div>
+      <div>
+        <div className="p-4  space-y-4">
+          <Button
+            onClick={() => setViewMode("edit")}
+            variant="outline"
+            className="w-full md:w-80"
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Edit Resume
+          </Button>
+          <ResumeTemplates template={template} setTemplate={setTemplate} />
         </div>
-        <div>
-          <ResumeScaffold resumeData={resumeData} setViewMode={setViewMode}>
-            <template.template />
-          </ResumeScaffold>
-        </div>
+
+        <ResumeScaffold resumeData={resumeData}>
+          <div>{templates.find((t) => t.label === template)?.Component}</div>
+        </ResumeScaffold>
       </div>
     );
   }

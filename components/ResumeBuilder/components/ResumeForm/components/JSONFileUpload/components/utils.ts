@@ -1,9 +1,6 @@
-import { z } from "zod";
-import { resumeSchema, defaultValues } from "../../../resumeSchema";
+import { resumeSchema, defaultValues, Resume } from "../../../resumeSchema";
 
 export const STORAGE_KEY = "resume-upload-urls";
-
-export type Resume = z.infer<typeof resumeSchema>;
 
 type SetError = (msg: string | null) => void;
 type SetSuccess = (ok: boolean) => void;
