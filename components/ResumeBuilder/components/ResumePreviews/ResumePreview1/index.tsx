@@ -416,13 +416,22 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
 
           {data.interests?.filter(Boolean).length > 0 && (
             <>
-              <div
-                style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}
-              >
+              <div style={{ fontSize: "14pt", fontWeight: 700, marginTop: 8 }}>
                 INTERESTS
               </div>
               <div style={{ fontSize: "10pt" }}>
                 {data.interests.filter(Boolean).join(", ")}
+              </div>
+            </>
+          )}
+
+          {data.knownLanguages?.filter(Boolean).length > 0 && (
+            <>
+              <div style={{ fontSize: "14pt", fontWeight: 700, marginTop: 8 }}>
+                LANGUAGES
+              </div>
+              <div style={{ fontSize: "10pt" }}>
+                {data.knownLanguages.filter(Boolean).join(", ")}
               </div>
             </>
           )}

@@ -1,12 +1,14 @@
-export const sampleData = {
+import { Resume } from "./resumeSchema";
+
+export const sampleData: Resume = {
   personalInfo: {
-    name: "Vikas Gupta",
+    name: "Sagar Alias Jackie",
     title: "Business Analyst / Data Scientist",
     phone: "+91 7070777077",
-    email: "vikas@techedtalk.com",
+    email: "sagaraliasjackie@007.com",
     location: "Chennai, India",
-    portfolioWebsite: "vikasfolio.dev",
-    linkedInUrl: "https://www.linkedin.com/in/vikasgupta007",
+    portfolioWebsite: "sagaraliasjackie.dev",
+    linkedInUrl: "https://www.linkedin.com/in/sagaraliasjackie007",
     summary:
       "Experienced Business Analyst and Data Scientist with expertise in machine learning, data analysis, and process improvement. Proven track record in delivering data-driven solutions and enhancing business efficiency through advanced analytics and automation.",
   },
@@ -59,15 +61,11 @@ export const sampleData = {
       degree: "Master of Computer Application; GPA: 8.06",
       institution: "Vellore Institute of Technology",
       year: "June 2022 - August 2024",
-      location: "Chennai, India",
-      additionalInfo: "Kolkata, India",
     },
     {
       degree: "Bachelor of Science (HONORS) - Mathematics; GPA: 8.70",
       institution: "Barasat Govt. College",
       year: "June 2018 - August 2021",
-      location: "",
-      additionalInfo: "",
     },
   ],
   projects: [
@@ -75,7 +73,6 @@ export const sampleData = {
       name: "Student Performance Prediction",
       link: "www.link.website",
       role: "Data Scientist",
-      duration: "December 23- February 2024",
       description:
         "Achieved a 96% accuracy rate in forecasting student academic performance by developing and deploying a machine learning model.",
       technologies: [],
@@ -89,7 +86,6 @@ export const sampleData = {
       name: "Credit Card Fraud Detection",
       link: "www.link.website",
       role: "Machine Learning Engineer",
-      duration: "September 23- October 2023",
       description:
         "Developed and fine-tuned a logistic regression-based machine learning model achieving an 87% accuracy rate in predicting credit card fraud.",
       technologies: [],
@@ -103,7 +99,6 @@ export const sampleData = {
       name: "Heart Disease Prediction",
       link: "www.link.website",
       role: "Data Scientist",
-      duration: "July 23- August 2023",
       description:
         "Orchestrated the development of a Logit model to predict heart disease, achieving an impressive accuracy rate of 91% and surpassing industry benchmarks by 8%.",
       technologies: [],
@@ -125,4 +120,5 @@ export const sampleData = {
     "Business Intelligence",
     "Process Optimization",
   ],
+  knownLanguages: ["English", "Malayalam"],
 };

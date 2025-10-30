@@ -803,6 +803,19 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                         />
                       </CardContent>
                     </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Known Languages</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ArrayFormField
+                          name="knownLanguages"
+                          placeholder="e.g. English, Hindi"
+                          label="Known Languages"
+                        />
+                      </CardContent>
+                    </Card>
                   </div>
                 </TabsContent>
               </Tabs>
