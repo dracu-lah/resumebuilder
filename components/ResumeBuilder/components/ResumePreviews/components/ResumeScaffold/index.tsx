@@ -67,12 +67,11 @@ const ResumeScaffold = ({
                 Download PDF
               </Button>
               <DownloadJSONButton data={resumeData} />
-
-              <Button onClick={() => setViewMode("edit")} variant="outline">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Resume
-              </Button>
             </div>
+            <Button onClick={() => setViewMode("edit")} variant="outline">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Resume
+            </Button>
           </div>
         </div>
 
