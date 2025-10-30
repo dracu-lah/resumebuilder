@@ -22,7 +22,6 @@ export const sampleData: Resume = {
           achievements: [
             "Reduced data processing time by 20% through streamlined collection and reporting",
             "Implemented automation solutions resulting in 15% productivity increase",
-            "Conducted market research identifying 10+ key trends for strategic decisions",
           ],
         },
       ],
@@ -43,11 +42,6 @@ export const sampleData: Resume = {
       institution: "Vellore Institute of Technology",
       year: "2022 - 2024",
     },
-    {
-      degree: "B.Sc. (Honors) Mathematics; GPA: 8.70",
-      institution: "Barasat Govt. College",
-      year: "2018 - 2021",
-    },
   ],
   projects: [
     {
@@ -62,23 +56,10 @@ export const sampleData: Resume = {
         "Identified key factors influencing academic performance through analysis",
       ],
     },
-    {
-      name: "Credit Card Fraud Detection",
-      link: "www.link.website",
-      role: "ML Engineer",
-      description:
-        "Developed logistic regression model achieving 87% accuracy in fraud prediction.",
-      technologies: [],
-      features: [
-        "Reduced false positives by 16% through feature engineering",
-        "Addressed class imbalance using ensemble techniques",
-      ],
-    },
   ],
   achievements: [
     "Programming in Python (Meta) - March 2023",
     "Introduction to Data Analyst (IBM) - March 2023",
-    "Foundations: Data, Data, Everywhere (Google) - March 2023",
   ],
   interests: ["Data Analysis", "Machine Learning", "Business Intelligence"],
   knownLanguages: ["English", "Malayalam"],
