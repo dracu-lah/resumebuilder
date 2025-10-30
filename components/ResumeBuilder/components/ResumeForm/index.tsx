@@ -118,7 +118,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Tabs defaultValue="personal" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-1 lg:grid-cols-6 min-h-[400px] md:min-h-full">
+                <TabsList className="grid w-full grid-cols-1 lg:grid-cols-6 min-h-[400px] lg:min-h-full">
                   <TabsTrigger value="personal">Personal</TabsTrigger>
                   <TabsTrigger value="experience">Experience</TabsTrigger>
                   <TabsTrigger value="skills">Skills</TabsTrigger>
