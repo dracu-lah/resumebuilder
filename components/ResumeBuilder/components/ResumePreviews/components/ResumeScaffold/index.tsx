@@ -1,15 +1,27 @@
 import { useReactToPrint } from "react-to-print";
-import { createContext, ReactNode, useContext, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+
+import { Edit } from "lucide-react";
 import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { defaultValues, Resume } from "../../../ResumeForm/resumeSchema";
+import { ViewModeType } from "@/components/ResumeBuilder";
 type ResumeFormType = {
   resumeData: Resume;
   children: ReactNode;
+  setViewMode: Dispatch<SetStateAction<ViewModeType>>;
 };
 
 type ContextType = {
@@ -21,7 +33,11 @@ const ResumeContext = createContext<ContextType>({
   showLinks: false,
 });
 
-const ResumeScaffold = ({ children, resumeData }: ResumeFormType) => {
+const ResumeScaffold = ({
+  children,
+  resumeData,
+  setViewMode,
+}: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
   const contentRef = useRef(null);
@@ -40,7 +56,7 @@ const ResumeScaffold = ({ children, resumeData }: ResumeFormType) => {
 
   return (
     <div className="min-h-screen ">
-      <div className="sticky top-0   shadow-sm pb-4 px-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div className="sticky top-0  bg-card  shadow-sm pb-4 px-4 flex flex-col md:flex-row gap-4 justify-between items-center">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Default Resume Preview</h1>
 
@@ -51,6 +67,11 @@ const ResumeScaffold = ({ children, resumeData }: ResumeFormType) => {
                 Download PDF
               </Button>
               <DownloadJSONButton data={resumeData} />
+
+              <Button onClick={() => setViewMode("edit")} variant="outline">
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Resume
+              </Button>
             </div>
           </div>
         </div>
