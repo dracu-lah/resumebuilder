@@ -27,7 +27,7 @@ const ArrayFieldComponent: React.FC<ArrayFieldComponentProps> = ({
   });
 
   return (
-    <div key={name} className="space-y-2">
+    <div key={name} className="space-y-2 flex flex-col">
       <span className="text-sm font-medium">{label}</span>
       {arrayFields.fields.map((field, index) => {
         const fieldError = (form.formState.errors?.[name] as FieldErrors)?.[
@@ -49,7 +49,7 @@ const ArrayFieldComponent: React.FC<ArrayFieldComponentProps> = ({
                   rows={rows}
                 />
               )}
-              {arrayFields.fields.length > 1 && (
+              {arrayFields.fields.length > 0 && (
                 <Button
                   type="button"
                   variant="outline"

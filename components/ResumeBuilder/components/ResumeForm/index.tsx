@@ -371,7 +371,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                               )}
                             />
 
-                            {experienceFields.fields.length > 1 && (
+                            {experienceFields.fields.length > 0 && (
                               <Button
                                 type="button"
                                 variant="destructive"
@@ -420,7 +420,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                       <ArrayFormField
                         name="skills.languages"
                         placeholder="e.g. JavaScript"
-                        label="Languages"
+                        label="Programming Languages"
                       />
 
                       <ArrayFormField
@@ -495,7 +495,7 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
                               className="mb-4"
                             />
 
-                            {educationFields.fields.length > 1 && (
+                            {educationFields.fields.length > 0 && (
                               <Button
                                 type="button"
                                 variant="destructive"

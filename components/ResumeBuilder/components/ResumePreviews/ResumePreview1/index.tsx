@@ -1,109 +1,40 @@
-import { useReactToPrint } from "react-to-print";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Download, Edit } from "lucide-react";
-import { DownloadJSONButton } from "@/components/ResumeBuilder/components/DownloadJSONButton";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-import { Resume } from "../../ResumeForm/components/JSONFileUpload/components/utils";
-type ResumeFormType = {
-  resumeData: Resume;
-  setViewMode: Dispatch<SetStateAction<"edit" | "preview">>;
-};
-const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
-  const [showLinks, setShowLinks] = useState(false);
-  const [isDesignMode, setIsDesignMode] = useState(false);
-  const contentRef = useRef(null);
+import { useResume } from "../components/ResumeScaffold";
 
-  const reactToPrintFn = useReactToPrint({
-    contentRef,
-    preserveAfterPrint: true,
-    pageStyle: `
-      @page { size: A4; margin: 0.5in; }
-      @media print {
-        body { -webkit-print-color-adjust: exact; color-adjust: exact; -webkit-font-smoothing: antialiased; }
-        .resume-container { width:100%; max-width:none; margin:0; padding:0; font-size:12px; line-height:1.35; }
-        .resume-section { break-inside: avoid; page-break-inside: avoid; }
-        .page-break { page-break-before: always; }
-        a { color: blue !important; text-decoration: underline; }
-        ul { list-style-type: disc !important; margin: 0 0 8px 18px !important; padding: 0 !important; }
-        li { margin-bottom: 6px !important; display: list-item !important; }
-        .print\\:hidden { display: none !important; }
-      }
-    `,
-    documentTitle: "Resume",
-  });
-
-  const ResumePreview = ({ data }: { data: Resume }) => (
-    <div
-      ref={contentRef}
-      contentEditable={isDesignMode}
-      className="bg-white p-[0.5in] max-w-4xl resume-container mx-auto text-black"
-      style={{
-        fontFamily: 'Georgia, "Times New Roman", Times, serif',
-        fontSize: "11pt",
-        lineHeight: 1.35,
-        color: "#111",
-      }}
-    >
-      {/* Force list styles in preview (overrides global resets that remove bullets) */}
-      <style>{`
-        .resume-container ul {
-          list-style-type: disc !important;
-          list-style-position: outside !important;
-          margin: 8px 0 8px 18px !important;
-          padding: 0 !important;
-        }
-        .resume-container li {
-          margin-bottom: 6px !important;
-          display: list-item !important;
-        }
-        /* nested lists spacing */
-        .resume-container ul ul {
-          margin-left: 24px !important;
-        }
-      `}</style>
-
-      {/* Header: name/links left, contact right */}
+const ResumePreviewPage = () => {
+  const { resumeData, showLinks } = useResume();
+  return (
+    <>
       <table
         width="100%"
         cellPadding={6}
         cellSpacing={0}
-        className="mb-6 resume-section"
-        style={{ tableLayout: "fixed" }}
+        className="mb-6 resume-section table-fixed"
       >
         <tbody>
           <tr>
-            <td
-              width="60%"
-              valign="top"
-              style={{ fontSize: "18pt", verticalAlign: "top" }}
-            >
-              <div style={{ fontWeight: 800, fontSize: "20pt", lineHeight: 1 }}>
-                {data.personalInfo?.name || ""}
+            <td className="w-3/5 align-top text-[18pt]">
+              <div className="font-extrabold text-[20pt] leading-none">
+                {resumeData.personalInfo?.name || ""}
               </div>
 
-              <div style={{ marginTop: 6, fontSize: "10pt", color: "#333" }}>
-                {data.personalInfo?.title && (
-                  <div
-                    style={{ fontSize: "11pt", fontWeight: 600, color: "#222" }}
-                  >
-                    {data.personalInfo.title}
+              <div className="mt-1.5 text-[10pt] text-[#333]">
+                {resumeData.personalInfo?.title && (
+                  <div className="text-[11pt] font-semibold text-[#222]">
+                    {resumeData.personalInfo.title}
                   </div>
                 )}
 
-                <div style={{ marginTop: 6 }}>
-                  {data.personalInfo?.portfolioWebsite && (
-                    <span style={{ marginRight: 12 }}>
+                <div className="mt-1.5">
+                  {resumeData.personalInfo?.portfolioWebsite && (
+                    <span className="mr-3">
                       <a
-                        href={data.personalInfo.portfolioWebsite}
+                        href={resumeData.personalInfo.portfolioWebsite}
                         className="text-indigo-700"
                         target="_blank"
                         rel="noreferrer"
                       >
                         {showLinks
-                          ? data.personalInfo.portfolioWebsite.replace(
+                          ? resumeData.personalInfo.portfolioWebsite.replace(
                               /^https?:\/\//,
                               "",
                             )
@@ -112,16 +43,16 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                     </span>
                   )}
 
-                  {data.personalInfo?.linkedInUrl && (
+                  {resumeData.personalInfo?.linkedInUrl && (
                     <span>
                       <a
-                        href={data.personalInfo.linkedInUrl}
+                        href={resumeData.personalInfo.linkedInUrl}
                         className="text-indigo-700"
                         target="_blank"
                         rel="noreferrer"
                       >
                         {showLinks
-                          ? data.personalInfo.linkedInUrl.replace(
+                          ? resumeData.personalInfo.linkedInUrl.replace(
                               /^https?:\/\//,
                               "",
                             )
@@ -131,43 +62,26 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                   )}
                 </div>
 
-                <div
-                  style={{
-                    marginTop: 8,
-                    display: "flex",
-                    gap: 8,
-                    alignItems: "center",
-                    fontSize: "11pt",
-                    color: "#222",
-                  }}
-                >
-                  {data.personalInfo?.phone && (
-                    <div>{data.personalInfo.phone}</div>
+                <div className="mt-2 flex gap-2 items-center text-[11pt] text-[#222]">
+                  {resumeData.personalInfo?.phone && (
+                    <div>{resumeData.personalInfo.phone}</div>
                   )}
-                  {data.personalInfo?.phone && data.personalInfo?.email && (
-                    <div>|</div>
-                  )}
-                  {data.personalInfo?.email && (
-                    <div>{data.personalInfo.email}</div>
+                  {resumeData.personalInfo?.phone &&
+                    resumeData.personalInfo?.email && <div>|</div>}
+                  {resumeData.personalInfo?.email && (
+                    <div>{resumeData.personalInfo.email}</div>
                   )}
                 </div>
               </div>
             </td>
 
-            <td
-              width="40%"
-              valign="top"
-              align="right"
-              style={{ fontSize: "10pt", verticalAlign: "top" }}
-            >
-              <div
-                style={{ color: "#222", textAlign: "right", fontSize: "11pt" }}
-              >
-                {data.personalInfo?.phone && (
-                  <div>{data.personalInfo.phone}</div>
+            <td className="w-2/5 align-top text-right text-[10pt]">
+              <div className="text-[#222] text-right text-[11pt]">
+                {resumeData.personalInfo?.phone && (
+                  <div>{resumeData.personalInfo.phone}</div>
                 )}
-                {data.personalInfo?.email && (
-                  <div style={{ marginTop: 6 }}>{data.personalInfo.email}</div>
+                {resumeData.personalInfo?.email && (
+                  <div className="mt-1.5">{resumeData.personalInfo.email}</div>
                 )}
               </div>
             </td>
@@ -176,170 +90,135 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
       </table>
 
       {/* Profile Summary */}
-      <section style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
-          PROFILE SUMMARY
-        </div>
-        {data.personalInfo?.title && (
-          <div style={{ fontSize: "12pt", fontWeight: 600, marginBottom: 6 }}>
-            {data.personalInfo.title}
+      <section className="mb-[18px]">
+        <div className="text-[14pt] font-bold mb-2">PROFILE SUMMARY</div>
+        {resumeData.personalInfo?.title && (
+          <div className="text-[12pt] font-semibold mb-1.5">
+            {resumeData.personalInfo.title}
           </div>
         )}
-        {data.personalInfo?.summary && (
-          <p style={{ fontSize: "11pt", textAlign: "justify", margin: 0 }}>
-            {data.personalInfo.summary}
+        {resumeData.personalInfo?.summary && (
+          <p className="text-[11pt] text-justify m-0">
+            {resumeData.personalInfo.summary}
           </p>
         )}
       </section>
 
       {/* Experience */}
-      {Array.isArray(data.experience) && data.experience.length > 0 && (
-        <section style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
-            EXPERIENCE
-          </div>
+      {Array.isArray(resumeData.experience) &&
+        resumeData.experience.length > 0 && (
+          <section className="mb-[18px]">
+            <div className="text-[14pt] font-bold mb-2">EXPERIENCE</div>
 
-          {Array.isArray(data.experience) &&
-            data.experience.map((exp, idx) => (
-              <div key={idx} style={{ marginBottom: 12 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                  }}
-                >
-                  <div style={{ fontSize: "12pt", fontWeight: 700 }}>
-                    {exp.company}
+            {Array.isArray(resumeData.experience) &&
+              resumeData.experience.map((exp, idx) => (
+                <div key={idx} className="mb-3">
+                  <div className="flex justify-between items-baseline">
+                    <div className="text-[12pt] font-bold">{exp.company}</div>
                   </div>
-                </div>
 
-                {Array.isArray(exp.positions) &&
-                  exp.positions.map((position, pIdx) => (
-                    <div key={pIdx} style={{ paddingTop: 10 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "baseline",
-                          gap: 12,
-                        }}
-                      >
-                        <div style={{ fontSize: "11pt", fontWeight: 600 }}>
-                          {position.title}
+                  {Array.isArray(exp.positions) &&
+                    exp.positions.map((position, pIdx) => (
+                      <div key={pIdx} className="pt-2.5">
+                        <div className="flex justify-between items-baseline gap-3">
+                          <div className="text-[11pt] font-semibold">
+                            {position.title}
+                          </div>
+                          <div className="text-[10pt] font-medium text-[#444]">
+                            {position.duration}
+                          </div>
                         </div>
-                        <div
-                          style={{
-                            fontSize: "10pt",
-                            fontWeight: 500,
-                            color: "#444",
-                          }}
-                        >
-                          {position.duration}
-                        </div>
+
+                        {Array.isArray(position.achievements) &&
+                          position.achievements.filter(Boolean).length > 0 && (
+                            <ul className="mt-2 pl-[18px] text-[10pt] leading-[1.4] list-disc">
+                              {position.achievements
+                                .filter(Boolean)
+                                .map((ach, aIdx) => (
+                                  <li
+                                    key={aIdx}
+                                    className="mb-1.5 text-justify"
+                                  >
+                                    {ach}
+                                  </li>
+                                ))}
+                            </ul>
+                          )}
                       </div>
+                    ))}
+                </div>
+              ))}
+          </section>
+        )}
 
-                      {Array.isArray(position.achievements) &&
-                        position.achievements.filter(Boolean).length > 0 && (
-                          <ul
-                            style={{
-                              marginTop: 8,
-                              paddingLeft: 18,
-                              fontSize: "10pt",
-                              lineHeight: 1.4,
-                            }}
-                          >
-                            {position.achievements
-                              .filter(Boolean)
-                              .map((ach, aIdx) => (
-                                <li
-                                  key={aIdx}
-                                  style={{
-                                    marginBottom: 6,
-                                    textAlign: "justify",
-                                  }}
-                                >
-                                  {ach}
-                                </li>
-                              ))}
-                          </ul>
-                        )}
-                    </div>
-                  ))}
+      {/* Technical Skills */}
+      {Object.values(resumeData.skills).some(
+        (skillArray) => skillArray?.filter(Boolean).length > 0,
+      ) && (
+        <section className="mb-[18px]">
+          <div className="text-[14pt] font-bold mb-2">TECHNICAL SKILLS</div>
+          <div className="text-[10pt] leading-[1.35] text-[#222]">
+            {resumeData.skills?.languages?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Languages:</strong>{" "}
+                {resumeData.skills.languages.filter(Boolean).join(", ")}
               </div>
-            ))}
+            )}
+            {resumeData.skills?.frameworks?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Frameworks & Libraries:</strong>{" "}
+                {resumeData.skills.frameworks.filter(Boolean).join(", ")}
+              </div>
+            )}
+            {resumeData.skills?.databases?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Databases:</strong>{" "}
+                {resumeData.skills.databases.filter(Boolean).join(", ")}
+              </div>
+            )}
+            {resumeData.skills?.architectures?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Architectures:</strong>{" "}
+                {resumeData.skills.architectures.filter(Boolean).join(", ")}
+              </div>
+            )}
+            {resumeData.skills?.tools?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Tools & Platforms:</strong>{" "}
+                {resumeData.skills.tools.filter(Boolean).join(", ")}
+              </div>
+            )}
+            {resumeData.skills?.methodologies?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Methodologies:</strong>{" "}
+                {resumeData.skills.methodologies.filter(Boolean).join(", ")}
+              </div>
+            )}
+            {resumeData.skills?.other?.filter(Boolean).length > 0 && (
+              <div className="mb-1.5">
+                <strong>Other Skills:</strong>{" "}
+                {resumeData.skills.other.filter(Boolean).join(", ")}
+              </div>
+            )}
+          </div>
         </section>
       )}
 
-      {/* Technical Skills */}
-      <section style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
-          TECHNICAL SKILLS
-        </div>
-        <div style={{ fontSize: "10pt", lineHeight: 1.35, color: "#222" }}>
-          {data.skills?.languages?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Languages:</strong>{" "}
-              {data.skills.languages.filter(Boolean).join(", ")}
-            </div>
-          )}
-          {data.skills?.frameworks?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Frameworks & Libraries:</strong>{" "}
-              {data.skills.frameworks.filter(Boolean).join(", ")}
-            </div>
-          )}
-          {data.skills?.databases?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Databases:</strong>{" "}
-              {data.skills.databases.filter(Boolean).join(", ")}
-            </div>
-          )}
-          {data.skills?.architectures?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Architectures:</strong>{" "}
-              {data.skills.architectures.filter(Boolean).join(", ")}
-            </div>
-          )}
-          {data.skills?.tools?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Tools & Platforms:</strong>{" "}
-              {data.skills.tools.filter(Boolean).join(", ")}
-            </div>
-          )}
-          {data.skills?.methodologies?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Methodologies:</strong>{" "}
-              {data.skills.methodologies.filter(Boolean).join(", ")}
-            </div>
-          )}
-          {data.skills?.other?.filter(Boolean).length > 0 && (
-            <div style={{ marginBottom: 6 }}>
-              <strong>Other Skills:</strong>{" "}
-              {data.skills.other.filter(Boolean).join(", ")}
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Projects */}
-      {Array.isArray(data.projects) && data.projects.length > 0 && (
-        <section style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
-            PROJECTS
-          </div>
-          {data.projects.map((project, pIdx) => (
-            <div key={pIdx} style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: "12pt", fontWeight: 700 }}>
+      {Array.isArray(resumeData.projects) && resumeData.projects.length > 0 && (
+        <section className="mb-[18px]">
+          <div className="text-[14pt] font-bold mb-2">PROJECTS</div>
+          {resumeData.projects.map((project, pIdx) => (
+            <div key={pIdx} className="mb-3">
+              <div className="text-[12pt] font-bold">
                 {project.name}
                 {project.link && (
-                  <span style={{ marginLeft: 8 }}>
+                  <span className="ml-2">
                     <a
                       href={project.link}
-                      className="text-indigo-700"
+                      className="text-indigo-700 no-underline"
                       target="_blank"
                       rel="noreferrer"
-                      style={{ color: "#1f6feb", textDecoration: "none" }}
                     >
                       {showLinks ? project.link : "Link"}
                     </a>
@@ -347,25 +226,21 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
                 )}
               </div>
 
-              <div style={{ fontSize: "10pt", paddingTop: 8 }}>
+              <div className="text-[10pt] pt-2">
                 {project.role && (
-                  <div
-                    style={{ fontWeight: 600, marginBottom: 6 }}
-                  >{`Role: ${project.role}`}</div>
+                  <div className="font-semibold mb-1.5">{`Role: ${project.role}`}</div>
                 )}
-                <div style={{ marginBottom: 6, textAlign: "justify" }}>
-                  {project.description}
-                </div>
+                <div className="mb-1.5 text-justify">{project.description}</div>
                 {project.technologies?.filter(Boolean).length > 0 && (
-                  <div style={{ fontStyle: "italic" }}>
+                  <div className="italic">
                     Technologies:{" "}
                     {project.technologies.filter(Boolean).join(", ")}
                   </div>
                 )}
                 {project.features?.filter(Boolean).length > 0 && (
-                  <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                  <ul className="mt-1.5 pl-[18px] list-disc">
                     {project.features.filter(Boolean).map((f, i) => (
-                      <li key={i} style={{ marginBottom: 6 }}>
+                      <li key={i} className="mb-1.5">
                         {f}
                       </li>
                     ))}
@@ -378,35 +253,33 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
       )}
 
       {/* Education */}
-      <section style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}>
-          EDUCATION
-        </div>
-        {data.education?.map((edu, eIdx) => (
-          <div key={eIdx} style={{ marginBottom: 10, fontSize: "11pt" }}>
-            <div style={{ fontWeight: 700 }}>
-              {edu.degree}
-              {edu.year ? ` [${edu.year}]` : ""}
+      {resumeData.education.length > 0 && (
+        <section className="mb-[18px]">
+          <div className="text-[14pt] font-bold mb-2">EDUCATION</div>
+          {resumeData.education?.map((edu, eIdx) => (
+            <div key={eIdx} className="mb-2.5 text-[11pt]">
+              <div className="font-bold">
+                {edu.degree}
+                {edu.year ? ` [${edu.year}]` : ""}
+              </div>
+              <div>{edu.institution}</div>
             </div>
-            <div>{edu.institution}</div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </section>
+      )}
 
       {/* Achievements and Interests */}
-      {(data.achievements?.filter(Boolean).length > 0 ||
-        data.interests?.filter(Boolean).length > 0) && (
-        <section style={{ marginBottom: 18 }}>
-          {data.achievements?.filter(Boolean).length > 0 && (
+      {(resumeData.achievements?.filter(Boolean).length > 0 ||
+        resumeData.interests?.filter(Boolean).length > 0) && (
+        <section className="mb-[18px]">
+          {resumeData.achievements?.filter(Boolean).length > 0 && (
             <>
-              <div
-                style={{ fontSize: "14pt", fontWeight: 700, marginBottom: 8 }}
-              >
+              <div className="text-[14pt] font-bold mb-2">
                 ACHIEVEMENTS AND CERTIFICATES
               </div>
-              <ul style={{ paddingLeft: 18, marginBottom: 12 }}>
-                {data.achievements.filter(Boolean).map((ach, aIdx) => (
-                  <li key={aIdx} style={{ marginBottom: 6, fontSize: "10pt" }}>
+              <ul className="pl-[18px] mb-3 list-disc">
+                {resumeData.achievements.filter(Boolean).map((ach, aIdx) => (
+                  <li key={aIdx} className="mb-1.5 text-[10pt]">
                     {ach}
                   </li>
                 ))}
@@ -414,83 +287,26 @@ const ResumePreviewPage = ({ resumeData, setViewMode }: ResumeFormType) => {
             </>
           )}
 
-          {data.interests?.filter(Boolean).length > 0 && (
+          {resumeData.interests?.filter(Boolean).length > 0 && (
             <>
-              <div style={{ fontSize: "14pt", fontWeight: 700, marginTop: 8 }}>
-                INTERESTS
-              </div>
-              <div style={{ fontSize: "10pt" }}>
-                {data.interests.filter(Boolean).join(", ")}
+              <div className="text-[14pt] font-bold mt-2">INTERESTS</div>
+              <div className="text-[10pt]">
+                {resumeData.interests.filter(Boolean).join(", ")}
               </div>
             </>
           )}
 
-          {data.knownLanguages?.filter(Boolean).length > 0 && (
+          {resumeData.knownLanguages?.filter(Boolean).length > 0 && (
             <>
-              <div style={{ fontSize: "14pt", fontWeight: 700, marginTop: 8 }}>
-                LANGUAGES
-              </div>
-              <div style={{ fontSize: "10pt" }}>
-                {data.knownLanguages.filter(Boolean).join(", ")}
+              <div className="text-[14pt] font-bold mt-2">LANGUAGES</div>
+              <div className="text-[10pt]">
+                {resumeData.knownLanguages.filter(Boolean).join(", ")}
               </div>
             </>
           )}
         </section>
       )}
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
-      <div className="sticky top-0 bg-white dark:bg-zinc-900 shadow-sm pb-4 px-4 flex flex-col md:flex-row gap-4 justify-between items-center">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Default Resume Preview</h1>
-
-          <div className="flex gap-2 flex-col md:flex-row">
-            <div className="flex gap-2 flex-row">
-              <Button onClick={reactToPrintFn}>
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF
-              </Button>
-              <DownloadJSONButton data={resumeData} />
-            </div>
-
-            <Button onClick={() => setViewMode("edit")} variant="outline">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Resume
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex gap-6">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="show-links"
-              checked={showLinks}
-              onCheckedChange={setShowLinks}
-            />
-            <Label htmlFor="show-links">Show Links</Label>
-          </div>
-
-          <div className="hidden md:flex items-center space-x-2">
-            <Switch
-              id="design-mode"
-              checked={isDesignMode}
-              onCheckedChange={(e) => {
-                setIsDesignMode(e);
-                if (e) toast.info("These changes won't be persisted!");
-              }}
-            />
-            <Label htmlFor="design-mode">Live Text Edit Mode</Label>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4 overflow-scroll">
-        <ResumePreview data={resumeData} />
-      </div>
-    </div>
+    </>
   );
 };
-
 export default ResumePreviewPage;

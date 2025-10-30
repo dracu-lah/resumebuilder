@@ -9,6 +9,7 @@ import ResumePreviewPage7 from "@/components/ResumeBuilder/components/ResumePrev
 import ResumeFormPage from "@/components/ResumeBuilder/components/ResumeForm";
 import { Button } from "../ui/button";
 import { type Resume } from "./components/ResumeForm/components/JSONFileUpload/components/utils";
+import ResumeScaffold from "./components/ResumePreviews/components/ResumeScaffold";
 
 const templates = [
   {
@@ -68,10 +69,9 @@ export default function ResumeBuilder() {
           </div>
         </div>
         <div>
-          <template.template
-            resumeData={resumeData}
-            setViewMode={setViewMode}
-          />
+          <ResumeScaffold resumeData={resumeData} setViewMode={setViewMode}>
+            <template.template />
+          </ResumeScaffold>
         </div>
       </div>
     );
