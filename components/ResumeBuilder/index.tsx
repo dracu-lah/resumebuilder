@@ -2,31 +2,21 @@ import { useState } from "react";
 import ResumeFormPage from "@/components/ResumeBuilder/components/ResumeForm";
 import { Resume } from "./components/ResumeForm/resumeSchema";
 import ResumeTemplates, { templates } from "./components/ResumeTemplates";
-import { Edit } from "lucide-react";
-import { Button } from "../ui/button";
 import ResumeScaffold from "./components/ResumePreviews/components/ResumeScaffold";
-
+export type ViewModeType = "preview" | "edit";
 export default function ResumeBuilder() {
-  const [viewMode, setViewMode] = useState<"preview" | "edit">("edit");
+  const [viewMode, setViewMode] = useState<ViewModeType>("edit");
   const [resumeData, setResumeData] = useState<Resume | null>(null);
   const [template, setTemplate] = useState<string>(templates[0].label);
 
   if (viewMode === "preview" && resumeData) {
     return (
       <div>
-        <div className="p-4  space-y-4">
-          <Button
-            onClick={() => setViewMode("edit")}
-            variant="outline"
-            className="w-full md:w-80"
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Resume
-          </Button>
+        <div className="p-4 bg-card  space-y-4">
           <ResumeTemplates template={template} setTemplate={setTemplate} />
         </div>
 
-        <ResumeScaffold resumeData={resumeData}>
+        <ResumeScaffold resumeData={resumeData} setViewMode={setViewMode}>
           <div>{templates.find((t) => t.label === template)?.Component}</div>
         </ResumeScaffold>
       </div>
