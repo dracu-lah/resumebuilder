@@ -10,7 +10,6 @@ import { defaultValues, Resume } from "../../../ResumeForm/resumeSchema";
 type ResumeFormType = {
   resumeData: Resume;
   children: ReactNode;
-  pageStyle?: string;
 };
 
 type ContextType = {
@@ -21,18 +20,8 @@ const ResumeContext = createContext<ContextType>({
   resumeData: defaultValues,
   showLinks: false,
 });
-const defaultPageStyle = `
-      @page { size: A4; margin: 0.5in; }
-      @media print {
-        .resume-container {  margin:0; padding:0; width:100%  }
-      }
-    `;
 
-const ResumeScaffold = ({
-  children,
-  resumeData,
-  pageStyle = defaultPageStyle,
-}: ResumeFormType) => {
+const ResumeScaffold = ({ children, resumeData }: ResumeFormType) => {
   const [showLinks, setShowLinks] = useState(false);
   const [isDesignMode, setIsDesignMode] = useState(false);
   const contentRef = useRef(null);
@@ -40,7 +29,12 @@ const ResumeScaffold = ({
   const reactToPrintFn = useReactToPrint({
     contentRef,
     preserveAfterPrint: true,
-    pageStyle,
+    pageStyle: `
+      @page { size: A4; margin: 0.5in; }
+      @media print {
+        .resume-container {  margin:0; padding:0; width:100%  }
+      }
+    `,
     documentTitle: "Resume",
   });
 

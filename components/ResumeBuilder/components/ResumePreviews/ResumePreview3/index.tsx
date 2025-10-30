@@ -3,7 +3,14 @@ import { useResume } from "../components/ResumeScaffold";
 const ResumePreviewPage = () => {
   const { resumeData, showLinks } = useResume();
   return (
-    <>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        fontSize: "11pt",
+        lineHeight: 1.35,
+        color: "#111",
+      }}
+    >
       {/* HEADER */}
       <table width="100%" cellPadding="4" cellSpacing="0" className="mb-2">
         <tbody>
@@ -244,7 +251,7 @@ const ResumePreviewPage = () => {
           </tbody>
         </table>
       )}
-    </>
+    </div>
   );
 };
 export default ResumePreviewPage;
