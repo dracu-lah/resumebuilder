@@ -2,31 +2,22 @@ import { useResume } from "../components/ResumeScaffold";
 
 const ResumePreviewPage = () => {
   const { resumeData, showLinks } = useResume();
+
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        fontSize: "11pt",
-        lineHeight: 1.35,
-        color: "#111",
-      }}
-    >
+    <div className="font-['Arial'] text-[11pt] leading-[1.35] text-gray-900 ">
       {/* HEADER */}
-      <table width="100%" cellPadding="4" cellSpacing="0" className="mb-2">
-        <tbody>
-          <tr>
-            <td width="70%" valign="top" style={{ fontSize: "10pt" }}>
-              <h1
-                className="font-bold mb-1"
-                style={{ fontSize: "16pt", color: "#000" }}
-              >
-                {resumeData.personalInfo.name}
-              </h1>
+      <div className="">
+        <div className="flex justify-between items-start mb-2">
+          <div className="w-[70%]">
+            <h1 className="text-[16pt] font-bold  text-black">
+              {resumeData.personalInfo.name}
+            </h1>
+            <div className="flex gap-2">
               {resumeData.personalInfo.portfolioWebsite && (
-                <div>
+                <div className="text-[10pt]">
                   <a
                     href={resumeData.personalInfo.portfolioWebsite}
-                    className="font-semibold text-indigo-600"
+                    className="text-blue-700 font-semibold hover:underline"
                   >
                     {!showLinks
                       ? "Website"
@@ -35,10 +26,10 @@ const ResumePreviewPage = () => {
                 </div>
               )}
               {resumeData.personalInfo.linkedInUrl && (
-                <div>
+                <div className="text-[10pt]">
                   <a
                     href={resumeData.personalInfo.linkedInUrl}
-                    className="text-indigo-600 font-semibold"
+                    className="text-blue-700 font-semibold hover:underline"
                   >
                     {!showLinks
                       ? "LinkedIn"
@@ -49,209 +40,158 @@ const ResumePreviewPage = () => {
                   </a>
                 </div>
               )}
-            </td>
-            <td
-              width="30%"
-              align="right"
-              valign="top"
-              style={{ fontSize: "10pt", lineHeight: "1.4" }}
-            >
+            </div>
+          </div>
+          <div className="w-[30%] text-right text-[10pt] leading-[1.4]">
+            <div>
+              <span className="font-semibold">Email:</span>{" "}
+              {resumeData.personalInfo.email}
+            </div>
+            {resumeData.personalInfo.phone && (
               <div>
-                <span className="font-semibold">Email:</span>{" "}
-                {resumeData.personalInfo.email}
+                <span className="font-semibold">Mobile:</span>{" "}
+                {resumeData.personalInfo.phone}
               </div>
-              {resumeData.personalInfo.phone && (
-                <div>
-                  <span className="font-semibold">Mobile:</span>{" "}
-                  {resumeData.personalInfo.phone}
-                </div>
-              )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <hr className="section-border border-t border-black mt-2 mb-2" />
+            )}
+          </div>
+        </div>
+      </div>
+      <hr className="border-t border-black my-2" />
 
       {/* SKILLS */}
-      <table width="100%" className="resume-section" cellPadding="3">
-        <tbody>
-          <tr>
-            <td align="center" colSpan={2}>
-              <h2 className="font-bold mb-1" style={{ fontSize: "11pt" }}>
-                SKILLS SUMMARY
-              </h2>
-            </td>
-          </tr>
+      <div className="mb-3">
+        <h2 className="text-[11pt] font-bold text-center ">SUMMARY</h2>
+        <div className="mb-2 text-justify text-sm">
+          {resumeData.personalInfo.summary}
+        </div>
+        <div className="space-y-0 text-sm">
           {Object.entries(resumeData.skills).map(([key, value]) =>
             value.filter(Boolean).length > 0 ? (
-              <tr key={key}>
-                <td width="28%" valign="top" className="font-bold pr-2">
+              <div key={key} className="flex">
+                <div className="w-[28%] font-bold pr-2">
                   • {key.charAt(0).toUpperCase() + key.slice(1)}:
-                </td>
-                <td>{value.filter(Boolean).join(", ")}</td>
-              </tr>
+                </div>
+                <div className="flex-1">{value.filter(Boolean).join(", ")}</div>
+              </div>
             ) : null,
           )}
-        </tbody>
-      </table>
-      <hr className="section-border border-t border-black mt-2 mb-2" />
+        </div>
+      </div>
+      <hr className="border-t border-black my-2" />
 
       {/* EXPERIENCE */}
-      <table width="100%" className="resume-section" cellPadding="3">
-        <tbody>
-          <tr>
-            <td align="center" colSpan={2}>
-              <h2 className="font-bold mb-1" style={{ fontSize: "11pt" }}>
-                WORK EXPERIENCE
-              </h2>
-            </td>
-          </tr>
+      <div className="mb-3">
+        <h2 className="text-[11pt] font-bold text-center ">WORK EXPERIENCE</h2>
+        <div className="space-y-3">
           {resumeData.experience.map((exp, i) =>
             exp.positions.map((pos, j) => (
-              <tr key={`${i}-${j}`}>
-                <td colSpan={2}>
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="font-bold" style={{ fontSize: "10pt" }}>
-                      {pos.title.toUpperCase()} | {exp.company.toUpperCase()}
-                    </span>
-                    <span
-                      className="font-semibold"
-                      style={{ fontSize: "9.5pt" }}
-                    >
-                      {pos.duration}
-                    </span>
-                  </div>
-                  <ul className="ml-4 mt-1 space-y-0.5">
-                    {pos.achievements.map((a, k) => (
-                      <li
-                        key={k}
-                        style={{ fontSize: "9pt", textAlign: "justify" }}
-                      >
-                        ○ {a}
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-              </tr>
+              <div key={`${i}-${j}`}>
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-[10pt] font-bold">
+                    {pos.title.toUpperCase()} | {exp.company.toUpperCase()}
+                  </span>
+                  <span className="text-[9.5pt] font-semibold">
+                    {pos.duration}
+                  </span>
+                </div>
+                <ul className="ml-4 space-y-0.5">
+                  {pos.achievements.map((a, k) => (
+                    <li key={k} className="text-[9pt] text-justify">
+                      ○ {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )),
           )}
-        </tbody>
-      </table>
-      <hr className="section-border border-t border-black mt-2 mb-2" />
+        </div>
+      </div>
+      <hr className="border-t border-black my-2" />
 
       {/* PROJECTS */}
       {resumeData.projects?.length > 0 && (
         <>
-          <table width="100%" className="resume-section" cellPadding="3">
-            <tbody>
-              <tr>
-                <td align="center" colSpan={2}>
-                  <h2 className="font-bold mb-1" style={{ fontSize: "11pt" }}>
-                    PROJECTS
-                  </h2>
-                </td>
-              </tr>
+          <div className="mb-3">
+            <h2 className="text-[11pt] font-bold text-center ">PROJECTS</h2>
+            <div className="space-y-3">
               {resumeData.projects.map((p, i) => (
-                <tr key={i}>
-                  <td colSpan={2}>
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="font-bold" style={{ fontSize: "10pt" }}>
-                        {p.name.toUpperCase()}{" "}
-                        {p.link && (
-                          <>
-                            |{" "}
-                            <a
-                              href={p.link}
-                              className="text-indigo-700 font-semibold"
-                            >
-                              {!showLinks ? "Link" : p.link}
-                            </a>
-                          </>
-                        )}
-                      </span>
-                    </div>
-                    <ul className="ml-4 mt-1 space-y-0.5">
-                      <li style={{ fontSize: "9pt", textAlign: "justify" }}>
-                        ○ {p.description}
-                      </li>
-                      {p.features.filter(Boolean).map((f, j) => (
-                        <li
-                          key={j}
-                          style={{ fontSize: "9pt", textAlign: "justify" }}
-                        >
-                          ○ {f}
-                        </li>
-                      ))}
-                      {p.technologies.filter(Boolean).length > 0 && (
-                        <li style={{ fontSize: "9pt" }}>
-                          ○ <strong>Technologies:</strong>{" "}
-                          {p.technologies.join(", ")}
-                        </li>
+                <div key={i}>
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="text-[10pt] font-bold">
+                      {p.name.toUpperCase()}{" "}
+                      {p.link && (
+                        <>
+                          |{" "}
+                          <a
+                            href={p.link}
+                            className="text-blue-700 font-semibold hover:underline"
+                          >
+                            {!showLinks ? "Link" : p.link}
+                          </a>
+                        </>
                       )}
-                    </ul>
-                  </td>
-                </tr>
+                    </div>
+                  </div>
+                  <ul className="ml-4 space-y-0.5">
+                    <li className="text-[9pt] text-justify">
+                      ○ {p.description}
+                    </li>
+                    {p.features.filter(Boolean).map((f, j) => (
+                      <li key={j} className="text-[9pt] text-justify">
+                        ○ {f}
+                      </li>
+                    ))}
+                    {p.technologies.filter(Boolean).length > 0 && (
+                      <li className="text-[9pt]">
+                        ○ <strong>Technologies:</strong>{" "}
+                        {p.technologies.join(", ")}
+                      </li>
+                    )}
+                  </ul>
+                </div>
               ))}
-            </tbody>
-          </table>
-          <hr className="section-border border-t border-black mt-2 mb-2" />
+            </div>
+          </div>
+          <hr className="border-t border-black my-2" />
         </>
       )}
 
       {/* EDUCATION */}
-      <table width="100%" className="resume-section" cellPadding="3">
-        <tbody>
-          <tr>
-            <td align="center" colSpan={2}>
-              <h2 className="font-bold mb-1" style={{ fontSize: "11pt" }}>
-                EDUCATION
-              </h2>
-            </td>
-          </tr>
+      <div className="mb-3">
+        <h2 className="text-[11pt] font-bold text-center ">EDUCATION</h2>
+        <div className="space-y-2">
           {resumeData.education.map((edu, i) => (
-            <tr key={i}>
-              <td width="65%" valign="top" style={{ paddingRight: "10px" }}>
+            <div key={i} className="flex justify-between">
+              <div className="w-[65%] pr-4">
                 <div className="font-bold">{edu.institution}</div>
                 <div>{edu.degree}</div>
-              </td>
-              <td
-                width="35%"
-                align="right"
-                valign="top"
-                style={{ lineHeight: "1.4" }}
-              ></td>
-            </tr>
+              </div>
+              <div className="w-[35%] text-right leading-[1.4]"></div>
+            </div>
           ))}
-        </tbody>
-      </table>
-      <hr className="section-border border-t border-black mt-2 mb-2" />
+        </div>
+      </div>
 
       {/* ACHIEVEMENTS */}
       {resumeData.achievements.filter(Boolean).length > 0 && (
-        <table width="100%" className="resume-section" cellPadding="3">
-          <tbody>
-            <tr>
-              <td align="center" colSpan={2}>
-                <h2 className="font-bold mb-1" style={{ fontSize: "11pt" }}>
-                  ACHIEVEMENTS AND CERTIFICATES
-                </h2>
-              </td>
-            </tr>
-            {resumeData.achievements.map((a, i) => (
-              <tr key={i}>
-                <td colSpan={2}>
-                  <ul className="ml-4 mt-1 space-y-0.5">
-                    <li style={{ fontSize: "9pt", textAlign: "justify" }}>
-                      ○ {a}
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          <hr className="border-t border-black my-2" />
+          <div className="mb-3">
+            <h2 className="text-[11pt] font-bold text-center ">
+              ACHIEVEMENTS AND CERTIFICATES
+            </h2>
+            <ul className="ml-4 space-y-0.5">
+              {resumeData.achievements.map((a, i) => (
+                <li key={i} className="text-[9pt] text-justify">
+                  ○ {a}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
       )}
     </div>
   );
 };
+
 export default ResumePreviewPage;
