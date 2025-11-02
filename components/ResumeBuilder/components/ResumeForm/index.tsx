@@ -1,4 +1,15 @@
 import { useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -109,10 +120,34 @@ const ResumeFormPage: React.FC<ResumeFormPageProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <JSONFileUpload onUpload={(data) => form.reset(data)} />
-            <Button onClick={loadSampleData} variant="outline">
-              <LoaderPinwheelIcon />
-              Load Sample Data
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">
+                  <LoaderPinwheelIcon />
+                  Load Sample Data
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    This action is irreversible!
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Loading the sample data will permanently replace your
+                    current resume data.[PS:Export JSON beforehand]
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive hover:bg-destructive/90"
+                    onClick={loadSampleData}
+                  >
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <OldResumeUpload onUpload={(data) => form.reset(data)} />
           </div>
           <Form {...form}>
