@@ -42,6 +42,12 @@ const ResumeScaffold = ({
   const [isDesignMode, setIsDesignMode] = useState(false);
   const contentRef = useRef(null);
 
+  const documentTitle =
+    `${resumeData.personalInfo.name} ${resumeData.personalInfo.title} Resume`.replaceAll(
+      " ",
+      "-",
+    );
+
   const reactToPrintFn = useReactToPrint({
     contentRef,
     preserveAfterPrint: true,
@@ -51,7 +57,7 @@ const ResumeScaffold = ({
         .resume-container {  margin:0; padding:0; width:100%  }
       }
     `,
-    documentTitle: "Resume",
+    documentTitle,
   });
 
   return (
