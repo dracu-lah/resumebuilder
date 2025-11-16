@@ -62,7 +62,7 @@ const ResumeScaffold = ({
 
   return (
     <div className="min-h-screen ">
-      <div className="sticky top-0  bg-card  shadow-sm pb-4 px-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div className="sticky top-0  bg-card z-40  shadow-sm pb-4 px-4 flex flex-col md:flex-row gap-4 justify-between items-center">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Default Resume Preview</h1>
 
